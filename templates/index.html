@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MySQLmaker</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/parts/_header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/parts/_flash.css') }}">
+</head>
+
+
+
+<body>
+    {% include 'parts/_flash.html' %}
+
+    <div class="app">
+
+        <!-- ヘッダー -->
+        <header>
+            <div class="logo">MySQLmaker</div>
+        </header>
+
+        <!-- 左のコマンドパレット -->
+        <aside class="sidebar">
+            <button class="btn yellow">ボタン1</button>
+            <button class="btn red">ボタン2</button>
+            <button class="btn green">ボタン3</button>
+            <button class="btn green">ボタン4</button>
+            <button class="btn green">ボタン5</button>
+            <button class="btn green">ボタン6</button>
+            <button class="btn green">ボタン7</button>
+            <button class="btn green">ボタン8</button>
+            <button class="btn green">ボタン9</button>
+            <button class="btn yellow">ボタン1</button>
+            <button class="btn red">ボタン2</button>
+            <button class="btn green">ボタン3</button>
+            <button class="btn green">ボタン4</button>
+            <button class="btn green">ボタン5</button>
+            <button class="btn green">ボタン6</button>
+            <button class="btn green">ボタン7</button>
+            <button class="btn green">ボタン8</button>
+            <button class="btn green">ボタン9</button>
+        </aside>
+
+        <!-- メイン領域（テーブルはまだ入れない） -->
+        <main class="main">
+            <div class="table-card">
+                <!-- テーブル物理名 -->
+                <div class="table-physical">
+                    <input type="text" value="物理名" class="input-table" />
+                </div>
+
+                <!-- テーブル論理名 -->
+                <div class="table-logical">
+                    <input type="text" value="ronnrimei" class="input-table" />
+                </div>
+
+                <!-- カラム一覧ラッパー（縦スクロール） -->
+                <div class="column-wrapper">
+                    <!-- 1行目 -->
+                    <div class="column-row">
+                        <div class="col-physical">
+                            <input type="text" value="物理名" class="input-col" />
+                        </div>
+                        <div class="col-key">
+                            <input type="text" value="PK" class="input-col" />
+                        </div>
+                        <div class="col-logical">
+                            <input type="text" value="ronnrimei" class="input-col" />
+                        </div>
+                        <div class="col-mold">
+                            <input type="text" value="INT" class="input-col" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- カラム追加 -->
+                <div class="add-column">＋ カラムを追加</div>
+
+            </div>
+
+            <!-- 右側のテーブル追加ボタン -->
+            <div class="add-table-btn">＋ 新しいテーブル</div>
+
+        </main>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/_flash.js') }}"></script>
+</body>
+
+</html>

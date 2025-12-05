@@ -1,0 +1,181 @@
+:root {
+  --header-height: 60px;
+  --sidebar-width: 170px;
+  --sidebar-bg: #ffffff;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+  background: #dcdcdc;
+}
+
+.app {
+  display: grid;
+  grid-template-rows: var(--header-height) 1fr;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  height: 100vh;
+}
+
+header {
+  grid-column: 1 / -1;
+  background: #1fc44b;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  background: var(--sidebar-bg);
+  padding: 15px 10px;
+  box-sizing: border-box;
+  border-right: 4px solid #bbbbbb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  height: calc(100vh - var(--header-height)); /* ← 高さ固定で中だけスクロール */
+  flex-shrink: 0; /* ← つぶれ防止 */
+}
+
+.btn {
+  width: 130px;
+  height: 38px;
+  min-height: 38px; /* ← 高さが縮まらないように固定 */
+  flex: 0 0 auto;   /* ← ボタン要素が縮まないようにする */
+  border-radius: 8px;
+  border: 2px solid rgba(0,0,0,0.18);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn.yellow { background: #f8f59a; }
+.btn.red    { background: #f6958c; }
+.btn.green  { background: #b8f7a1; }
+
+.main {
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.table-card {
+  width: 750px;
+  border: 4px solid #1f357c;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* テーブル物理名 */
+.table-physical {
+  background: #192c93;
+  color: white;
+  padding: 10px 14px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* テーブル論理名 */
+.table-logical {
+  background: #3a62d6;
+  color: white;
+  padding: 10px 14px;
+  font-size: 18px;
+}
+
+/* カラム行のラッパー（スクロール） */
+.column-wrapper {
+  max-height: 380px;
+  overflow-y: auto;
+  border-top: 2px solid #1f357c;
+}
+
+/* カラム1行 */
+.column-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  border-bottom: 2px solid #000;
+}
+
+/* カラム物理名 */
+.col-physical {
+  background: #ffffff;
+  padding: 12px;
+}
+
+/* カラム論理名 */
+.col-logical {
+  background: #b7d0ff;
+  padding: 12px;
+}
+
+.col-key {
+  background: #ff0000;
+  padding: 12px;
+}
+
+.col-mold {
+  background: #f8f59a;
+  padding: 12px;
+  border-right: 2px solid #000; /* 右側の区切り線 */
+}
+
+/* カラム追加ボタン（下部の白い領域） */
+.add-column {
+  padding: 18px;
+  text-align: center;
+  font-size: 22px;
+  background: #ffffff;
+  border-top: 3px solid #000;
+  cursor: pointer;
+}
+
+/* 右側のテーブル追加ボタン */
+.add-table-btn {
+  width: 140px;
+  height: 60px;
+  background: #ffffff;
+  border: 3px solid #000;
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.input-table,
+.input-col {
+  width: 100%;
+  font-size: 20px;
+  box-sizing: border-box;
+  border: none;
+  background: transparent; /* 親の背景色を透過 */
+  outline: none;
+  text-align: center;
+}
+
+.input-table {
+  color: #ffffff;
+}
+
+/* フォーカス時に内側グレー枠線 */
+.col-physical:focus-within,
+.col-logical:focus-within,
+.col-key:focus-within,
+.col-mold:focus-within,
+.table-physical:focus-within,
+.table-logical:focus-within {
+  box-shadow: inset 0 0 0 2px #555555,  /* 濃いグレーのはっきり枠 */
+              inset 0 0 8px 2px rgba(170,170,170,0.5); /* 薄めグレーで光っぽく */
+  transition: box-shadow 0.2s ease-in-out;
+}
+
