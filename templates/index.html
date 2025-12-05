@@ -19,13 +19,16 @@
     {% include 'parts/_flash.html' %}
 
     <div class="app">
-
         <!-- ヘッダー -->
         <header>
             <div class="logo">MySQLmaker</div>
+            <div class="toggle-switch">
+                <div class="toggle-option active">左</div>
+                <div class="toggle-option">右</div>
+            </div>
         </header>
 
-        <!-- 左のコマンドパレット -->
+        <!-- コマンドパレット -->
         <aside class="sidebar">
             <button class="btn yellow">ボタン1</button>
             <button class="btn red">ボタン2</button>
@@ -47,51 +50,74 @@
             <button class="btn green">ボタン9</button>
         </aside>
 
-        <!-- メイン領域（テーブルはまだ入れない） -->
+        <!-- メイン -->
         <main class="main">
             <div class="table-card">
-                <!-- テーブル物理名 -->
                 <div class="table-physical">
                     <input type="text" value="物理名" class="input-table" />
                 </div>
-
-                <!-- テーブル論理名 -->
                 <div class="table-logical">
                     <input type="text" value="ronnrimei" class="input-table" />
                 </div>
 
-                <!-- カラム一覧ラッパー（縦スクロール） -->
+                <!-- カラム一覧 -->
                 <div class="column-wrapper">
-                    <!-- 1行目 -->
+                    <!-- 行 -->
                     <div class="column-row">
                         <div class="col-physical">
                             <input type="text" value="物理名" class="input-col" />
                         </div>
-                        <div class="col-key">
+                        <div class="col-key pk">
                             <input type="text" value="PK" class="input-col" />
                         </div>
                         <div class="col-logical">
                             <input type="text" value="ronnrimei" class="input-col" />
                         </div>
-                        <div class="col-mold">
+                        <div class="col-mold int">
+                            <input type="text" value="INT" class="input-col" />
+                        </div>
+                    </div>
+                    <!-- 行 -->
+                    <div class="column-row">
+                        <div class="col-physical">
+                            <input type="text" value="物理名" class="input-col" />
+                        </div>
+                        <div class="col-key fk">
+                            <input type="text" value="FK" class="input-col" />
+                        </div>
+                        <div class="col-logical">
+                            <input type="text" value="ronnrimei" class="input-col" />
+                        </div>
+                        <div class="col-mold varchar">
+                            <input type="text" value="INT" class="input-col" />
+                        </div>
+                    </div>
+                    <!-- 行 -->
+                    <div class="column-row">
+                        <div class="col-physical">
+                            <input type="text" value="物理名" class="input-col" />
+                        </div>
+                        <div class="col-key">
+                            <input type="text" value="" class="input-col" />
+                        </div>
+                        <div class="col-logical">
+                            <input type="text" value="ronnrimei" class="input-col" />
+                        </div>
+                        <div class="col-mold other">
                             <input type="text" value="INT" class="input-col" />
                         </div>
                     </div>
                 </div>
 
-                <!-- カラム追加 -->
                 <div class="add-column">＋ カラムを追加</div>
-
             </div>
 
-            <!-- 右側のテーブル追加ボタン -->
             <div class="add-table-btn">＋ 新しいテーブル</div>
-
         </main>
-
     </div>
 
-    <script src="{{ url_for('static', filename='js/_flash.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
 </body>
 
 </html>
