@@ -39,15 +39,6 @@
             <button class="btn green">ボタン7</button>
             <button class="btn green">ボタン8</button>
             <button class="btn green">ボタン9</button>
-            <button class="btn yellow">ボタン1</button>
-            <button class="btn red">ボタン2</button>
-            <button class="btn green">ボタン3</button>
-            <button class="btn green">ボタン4</button>
-            <button class="btn green">ボタン5</button>
-            <button class="btn green">ボタン6</button>
-            <button class="btn green">ボタン7</button>
-            <button class="btn green">ボタン8</button>
-            <button class="btn green">ボタン9</button>
         </aside>
 
         <!-- メイン -->
@@ -76,9 +67,7 @@
                         <div class="col-mold int">
                             <input type="text" value="INT" class="input-col" />
                         </div>
-                        <div class="col-default">
-                            <input type="text" value="デフォルト値" class="input-col" />
-                        </div>
+                        <div class="col-ng"></div>
                         <div class="col-constraint">
                             <label>
                                 <input type="checkbox" class="chk-col" /> NOT NULL
@@ -110,7 +99,7 @@
                             <input type="text" value="varchar(255)" class="input-col" />
                         </div>
                         <div class="col-default">
-                            <input type="text" value="デフォルト値" class="input-col" />
+                            <input type="text" value="" class="input-col" />
                         </div>
                         <div class="col-constraint">
                             <label>
@@ -160,11 +149,59 @@
                 <div class="add-column">＋ カラムを追加</div>
             </div>
 
+            <div class="table-card">
+                <div class="table-physical">
+                    <input type="text" value="物理名" class="input-table" />
+                </div>
+                <div class="table-logical">
+                    <input type="text" value="ronnrimei" class="input-table" />
+                </div>
+
+                <!-- カラム -->
+                <div class="column-wrapper">
+                    <!-- 行 -->
+                    <div class="column-row">
+                        <div class="col-physical">
+                            <input type="text" value="物理名" class="input-col" />
+                        </div>
+                        <div class="col-key">
+                            <input type="text" value="" class="input-col" />
+                        </div>
+                        <div class="col-logical">
+                            <input type="text" value="ronnrimei" class="input-col" />
+                        </div>
+                        <div class="col-mold int">
+                            <input type="text" value="INT" class="input-col" />
+                        </div>
+                        <div class="col-default">
+                            <input type="text" value="" class="input-col" />
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> NOT NULL
+                            </label>
+                        </div>
+                        <div class="col-constraint">
+                            <label class="auto-increment">
+                                <input type="checkbox" class="chk-col" /> AUTO INCREMENT
+                            </label>
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> UNIQUE
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="add-column">＋ カラムを追加</div>
+            </div>
+
             <div class="add-table-btn">＋ 新しいテーブル</div>
         </main>
     </div>
 
-    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
 </body>
 
