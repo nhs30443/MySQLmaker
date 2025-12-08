@@ -37,6 +37,12 @@ def index():
     return render_template("index.html")
 
 
+# DB作成ページ
+@app.route('/makeDB')
+def makeDB():
+    return render_template("makeDB.html")
+
+
 ############################################################################
 ### 実行制御
 ############################################################################

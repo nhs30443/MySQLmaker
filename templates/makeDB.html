@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>MySQLmaker</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/parts/_flash.css') }}">
+</head>
+
+
+
+<body>
+    {% include 'parts/_flash.html' %}
+
+    <div class="app">
+        <header>
+            <div class="logo">MySQLmaker</div>
+            <div class="toggle-switch">
+                <div class="toggle-option active">左</div>
+                <div class="toggle-option">右</div>
+            </div>
+        </header>
+
+        <aside class="sidebar"></aside>
+
+        <main class="main">
+            <div id="table1" class="table-card">
+                <div id="table1-physical" class="table-physical">
+                    <input type="text" class="input-table" placeholder="テーブル物理名" />
+                </div>
+                <div id="table1-logical" class="table-logical">
+                    <input type="text" class="input-table" placeholder="table_logical_name" />
+                </div>
+
+                <div id="table1-column-wrapper" class="column-wrapper">
+                    <div id="table1-column1-row" class="column-row">
+                        <div id="table1-column1-physical" class="col-physical">
+                            <input type="text" class="input-col" placeholder="カラム物理名" />
+                        </div>
+                        <div id="table1-column1-key" class="col-key">
+                            <input type="text" class="input-col" placeholder="PK/FK" />
+                        </div>
+                        <div id="table1-column1-logical" class="col-logical">
+                            <input type="text" class="input-col" placeholder="columnLogicalName" />
+                        </div>
+                        <div id="table1-column1-mold" class="col-mold int">
+                            <input type="text" value="INT" class="input-col" placeholder="型" />
+                        </div>
+                        <div id="table1-column1-default" class="col-default">
+                            <input type="text" class="input-col" placeholder="デフォルト値" />
+                        </div>
+                        <div id="table1-column1-not-null" class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> NOT NULL
+                            </label>
+                        </div>
+                        <div id="table1-column1-auto-increment" class="col-constraint">
+                            <label class="auto-increment">
+                                <input type="checkbox" class="chk-col" /> AUTO INCREMENT
+                            </label>
+                        </div>
+                        <div id="table1-column1-unique" class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> UNIQUE
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="add-column">＋ カラムを追加</div>
+            </div>
+
+            <div class="add-table-btn">＋ 新しいテーブル</div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/addTable.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/command.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
+
+</body>
+
+</html>
