@@ -92,21 +92,42 @@ header {
   min-height: 38px;
   flex: 0 0 auto;
   border-radius: 8px;
-  border: 2px solid rgba(0, 0, 0, 0.18);
   cursor: pointer;
   font-size: 16px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  transition: 0.15s ease;
+  transition: 0.25s ease;
+  border: 2px solid rgba(0,0,0,0.18);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.18),
+    rgba(0,0,0,0.07)
+  );
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
 }
 
 .btn:hover {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.28);
 }
 
-.btn.yellow { background: #f8f59a; }
-.btn.red    { background: #f6958c; }
-.btn.green  { background: #b8f7a1; }
+.btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.28);
+}
+
+.btn.yellow {
+  background-color: #fffb8f;
+  border-color: #e5d800;
+}
+
+.btn.red {
+  background-color: #ff9a91;
+  border-color: #d95a52;
+}
+
+.btn.green {
+  background-color: #beffa6;
+  border-color: #4aa83b;
+}
 
 .main {
   min-width: max-content;
@@ -127,37 +148,21 @@ header {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 0;
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
 .table-physical {
   background: #192c93;
   color: white;
-  padding: 8px 12px;
-  font-size: 17px;
-  font-weight: bold;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.2),
-    rgba(0,0,0,0.1)
-  );
 }
 
 .table-logical {
   background: #3a62d6;
   color: white;
-  padding: 8px 12px;
-  font-size: 15px;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.22),
-    rgba(0,0,0,0.1)
-  );
 }
 
 .column-wrapper {
-  max-height: 300px;
+  max-height: 600px;
   overflow-y: auto;
   border-top: 2px solid #1f357c;
 }
@@ -168,51 +173,134 @@ header {
   border-bottom: 2px solid #000;
 }
 
-.col-physical {
-  background: #ffffff;
-  padding: 10px;
+.table-physical,
+.table-logical,
+.col-physical,
+.col-logical,
+.col-key,
+.col-mold,
+.col-default,
+.col-reference,
+.col-constraint,
+.col-ng {
+  padding: 8px;
   font-size: 15px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.18),
+    rgba(0,0,0,0.06)
+  );
+  border-top: 1px solid rgba(255,255,255,0.45);
+  border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+
+.col-physical {
+  background-color: #ffffff;
 }
 
 .col-logical {
-  background: #b7d0ff;
-  padding: 10px;
-  font-size: 15px;
+  background-color: #b7d0ff;
 }
 
-.col-key {
-  background: #666;
-  padding: 10px;
-  font-size: 15px;
+.col-key,
+.col-ng {
+  background-color: #999;
+  color: #ffffff;
 }
+
 .pk {
-  background: #ff0000;
+  background-color: #ff0000;
 }
+
 .fk {
-  background: #04bc28;
+  background-color: #04bc28;
 }
+
 .col-key input {
   color: #ffffff;
 }
 
-.col-mold {
-  padding: 10px;
-  font-size: 15px;
+.col-mold.int {
+  background-color: #fffb8f;
 }
-.int {
-  background: #f8f59a;
+
+.col-mold.char {
+  background-color: #ff9a91;
 }
-.varchar {
-  background: #f6958c;
+
+.col-mold.other {
+  background-color: #beffa6;
 }
-.other {
-  background: #b8f7a1;
+
+.col-reference {
+  background-color: #d9f2d9;
+}
+
+.col-default {
+  background-color: #ffd063;
+}
+
+.col-constraint {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.col-constraint label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.auto-increment {
+  justify-content: center;
+}
+
+.chk-col {
+  width: 18px;
+  height: 18px;
+  appearance: none;
+  border-radius: 4px;
+  border: 2px solid rgba(0, 0, 0, 0.35);
+  background: #fff;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.6),
+      rgba(0, 0, 0, 0.08));
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: 0.18s;
+}
+
+.chk-col:checked {
+  background-color: #04bc28;
+  border-color: #1f357c;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.35),
+      rgba(0, 0, 0, 0.08));
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.28);
+}
+
+.chk-col:checked::after {
+  content: "";
+  width: 6px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  display: block;
+  margin-left: 4px;
+  margin-top: 1px;
 }
 
 .add-column {
   padding: 16px;
   text-align: center;
-  font-size: 19px;
+  font-size: 18px;
   background: #ffffff;
   cursor: pointer;
   transition: 0.2s;
@@ -231,8 +319,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 18px;
   cursor: pointer;
-  border-radius: 0;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   transition: 0.2s;
 }
@@ -256,50 +344,20 @@ header {
   color: #ffffff;
 }
 
-.col-physical:focus-within {
-  box-shadow: inset 0 0 0 2px #777,
-              inset 0 0 14px 4px rgba(165, 165, 165, 0.45);
-  transition: 0.2s ease-in-out;
-}
-
-.col-logical:focus-within {
-  box-shadow: inset 0 0 0 2px #6a8cff,
-              inset 0 0 14px 4px rgba(90,130,255,0.55);
-  transition: 0.2s ease-in-out;
-}
-
-.col-key:focus-within {
-  box-shadow: inset 0 0 0 2px #333,
-              inset 0 0 14px 4px rgba(0, 0, 0, 0.45);
-  transition: 0.2s ease-in-out;
-}
-.col-key.pk:focus-within {
-  box-shadow: inset 0 0 0 2px #990000,
-              inset 0 0 14px 4px rgba(181, 57, 57, 0.75);
-  transition: 0.2s ease-in-out;
-}
-.col-key.fk:focus-within {
-  box-shadow: inset 0 0 0 2px #037a1b,
-              inset 0 0 14px 4px rgba(34, 131, 47, 0.85);
-  transition: 0.2s ease-in-out;
-}
-
-.col-mold:focus-within {
-  box-shadow: inset 0 0 0 2px #b8a800,
-              inset 0 0 14px 4px rgba(190, 175, 89, 0.65);
-  transition: 0.2s ease-in-out;
-}
-
-.table-physical:focus-within {
-  box-shadow: inset 0 0 0 2px #0d1a66,
-              inset 0 0 7px 2px rgba(210, 220, 255, 0.90);
-  transition: 0.2s ease-in-out;
-}
-
+.col-physical:focus-within,
+.col-logical:focus-within,
+.col-key:focus-within,
+.col-key.pk:focus-within,
+.col-key.fk:focus-within,
+.col-mold.int:focus-within,
+.col-mold.char:focus-within,
+.col-mold.other:focus-within,
+.col-default:focus-within,
+.col-reference:focus-within,
+.table-physical:focus-within,
 .table-logical:focus-within {
-  box-shadow: inset 0 0 0 2px #1b3ca8,
-              inset 0 0 7px 2px rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 0 0 2px #ffffff,
+    inset 0 0 0 3px #333;
   transition: 0.2s ease-in-out;
 }
-
-

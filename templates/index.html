@@ -60,7 +60,7 @@
                     <input type="text" value="ronnrimei" class="input-table" />
                 </div>
 
-                <!-- カラム一覧 -->
+                <!-- カラム -->
                 <div class="column-wrapper">
                     <!-- 行 -->
                     <div class="column-row">
@@ -76,6 +76,24 @@
                         <div class="col-mold int">
                             <input type="text" value="INT" class="input-col" />
                         </div>
+                        <div class="col-default">
+                            <input type="text" value="デフォルト値" class="input-col" />
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> NOT NULL
+                            </label>
+                        </div>
+                        <div class="col-constraint">
+                            <label class="auto-increment">
+                                <input type="checkbox" class="chk-col" /> AUTO INCREMENT
+                            </label>
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> UNIQUE
+                            </label>
+                        </div>
                     </div>
                     <!-- 行 -->
                     <div class="column-row">
@@ -88,8 +106,24 @@
                         <div class="col-logical">
                             <input type="text" value="ronnrimei" class="input-col" />
                         </div>
-                        <div class="col-mold varchar">
-                            <input type="text" value="INT" class="input-col" />
+                        <div class="col-mold char">
+                            <input type="text" value="varchar(255)" class="input-col" />
+                        </div>
+                        <div class="col-default">
+                            <input type="text" value="デフォルト値" class="input-col" />
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> NOT NULL
+                            </label>
+                        </div>
+                        <div class="col-reference">
+                            <input type="text" value="FK参照先" class="input-col" />
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> UNIQUE
+                            </label>
                         </div>
                     </div>
                     <!-- 行 -->
@@ -104,7 +138,21 @@
                             <input type="text" value="ronnrimei" class="input-col" />
                         </div>
                         <div class="col-mold other">
-                            <input type="text" value="INT" class="input-col" />
+                            <input type="text" value="TEXT" class="input-col" />
+                        </div>
+                        <div class="col-default">
+                            <input type="text" value="デフォルト値" class="input-col" />
+                        </div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> NOT NULL
+                            </label>
+                        </div>
+                        <div class="col-ng"></div>
+                        <div class="col-constraint">
+                            <label>
+                                <input type="checkbox" class="chk-col" /> UNIQUE
+                            </label>
                         </div>
                     </div>
                 </div>
