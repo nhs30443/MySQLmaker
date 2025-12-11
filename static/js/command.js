@@ -23,16 +23,16 @@ function setTextToTarget(text) {
 
 // -------------------- コマンド定義 --------------------
 const commands = {
-    'table-physical': [
+    'table-logical': [
         { text: 'テーブル削除', class: 'red', action: deleteTable }
     ],
-    'table-logical': [
+    'table-physical': [
         { text: '翻訳命名', class: 'green' }
     ],
-    'col-physical': [
+    'col-logical': [
         { text: 'カラム削除', class: 'red', action: deleteColumn }
     ],
-    'col-logical': [
+    'col-physical': [
         { text: '翻訳命名', class: 'green' }
     ],
     'col-key': [

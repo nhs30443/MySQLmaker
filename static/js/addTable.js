@@ -5,14 +5,14 @@ let columnCount = { table1: 1 };
 function createColumnRow(tableId, colNum) {
     return `
         <div id="${tableId}-column${colNum}-row" class="column-row">
-            <div id="${tableId}-column${colNum}-physical" class="col-physical">
-                <input type="text" class="input-col" placeholder="カラム物理名" />
+            <div id="${tableId}-column${colNum}-logical" class="col-logical">
+                <input type="text" class="input-col" placeholder="カラム論理名" />
             </div>
             <div id="${tableId}-column${colNum}-key" class="col-key">
                 <input type="text" class="input-col" placeholder="PK/FK" />
             </div>
-            <div id="${tableId}-column${colNum}-logical" class="col-logical">
-                <input type="text" class="input-col" placeholder="column_logical_name" />
+            <div id="${tableId}-column${colNum}-physical" class="col-physical">
+                <input type="text" class="input-col" placeholder="column_physical_name" />
             </div>
             <div id="${tableId}-column${colNum}-mold" class="col-mold int">
                 <input type="text" value="INT" class="input-col" placeholder="型" />
@@ -64,11 +64,11 @@ setupAddColumn('table1');
 // テーブルテンプレート
 function createTableHtml(tableId) {
     return `
-        <div id="${tableId}-physical" class="table-physical">
-            <input type="text" class="input-table" placeholder="テーブル物理名" />
-        </div>
         <div id="${tableId}-logical" class="table-logical">
-            <input type="text" class="input-table" placeholder="table_logical_name" />
+            <input type="text" class="input-table" placeholder="テーブル論理名" />
+        </div>
+        <div id="${tableId}-physical" class="table-physical">
+            <input type="text" class="input-table" placeholder="table_physical_name" />
         </div>
 
         <div id="${tableId}-column-wrapper" class="column-wrapper">

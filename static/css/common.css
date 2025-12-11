@@ -183,18 +183,18 @@ header {
   box-shadow: 0 6px 12px rgba(0,0,0,0.2);
 }
 
-.table-physical {
+.table-logical {
   background: #192c93;
   color: white;
 }
 
-.table-logical {
+.table-physical {
   background: #3a62d6;
   color: white;
 }
 
-.table-physical .input-table::placeholder,
-.table-logical .input-table::placeholder {
+.table-logical .input-table::placeholder,
+.table-physical .input-table::placeholder {
   color: #cccccc;
   opacity: 1;
 }
@@ -211,10 +211,10 @@ header {
   border-bottom: 2px solid #000;
 }
 
-.table-physical,
 .table-logical,
-.col-physical,
+.table-physical,
 .col-logical,
+.col-physical,
 .col-key,
 .col-mold,
 .col-default,
@@ -232,11 +232,11 @@ header {
   border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
-.col-physical {
+.col-logical {
   background-color: #ffffff;
 }
 
-.col-logical {
+.col-physical {
   background-color: #b7d0ff;
 }
 
@@ -381,8 +381,8 @@ header {
   color: #ffffff;
 }
 
-.col-physical:focus-within,
 .col-logical:focus-within,
+.col-physical:focus-within,
 .col-key:focus-within,
 .col-key.pk:focus-within,
 .col-key.fk:focus-within,
@@ -391,8 +391,8 @@ header {
 .col-mold.other:focus-within,
 .col-default:focus-within,
 .col-reference:focus-within,
-.table-physical:focus-within,
-.table-logical:focus-within {
+.table-logical:focus-within,
+.table-physical:focus-within {
   box-shadow:
     inset 0 0 0 2px #ffffff,
     inset 0 0 0 3px #333;
