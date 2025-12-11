@@ -33,7 +33,8 @@ header {
   padding-top: 60px;
   height: calc(100vh - 60px);
   display: grid;
-  grid-template-columns: 170px 1fr;
+  grid-template-columns: 1fr;
+  margin-left: 170px;
   overflow-y: hidden;
 }
 
@@ -75,6 +76,11 @@ header {
 }
 
 .sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 170px;
+  height: calc(100vh - 60px);
   background: #ffffff;
   padding: 15px 10px;
   box-sizing: border-box;
@@ -83,7 +89,6 @@ header {
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-  height: calc(100vh - 60px);
   box-shadow: 3px 0 10px rgba(0,0,0,0.12);
 }
 
@@ -155,10 +160,6 @@ header {
   border-color: #4aa83b;
 }
 
-.sidebar button:last-child {
-  margin-bottom: 20px;
-}
-
 .main {
   min-width: max-content;
   height: 100%;
@@ -194,8 +195,8 @@ header {
 
 .table-physical .input-table::placeholder,
 .table-logical .input-table::placeholder {
-    color: #cccccc;
-    opacity: 1;
+  color: #cccccc;
+  opacity: 1;
 }
 
 .column-wrapper {
