@@ -200,7 +200,7 @@ header {
 }
 
 .column-wrapper {
-  max-height: 600px;
+  max-height: 550px;
   overflow-y: auto;
   border-top: 2px solid #1f357c;
 }
