@@ -1,15 +1,36 @@
 const sidebar = document.querySelector('.sidebar');
+let currentTarget = null;
 
-// コマンドセット
+
+// -------------------- アクション定義 --------------------
+function deleteTable() {
+    if (!currentTarget) return;
+    const tableCard = currentTarget.closest('.table-card');
+    if (tableCard) tableCard.remove();
+}
+
+function deleteColumn() {
+    if (!currentTarget) return;
+    const row = currentTarget.closest('.column-row');
+    if (row) row.remove();
+}
+
+function setTextToTarget(text) {
+    if (currentTarget) {
+        currentTarget.value = text;
+    }
+}
+
+// -------------------- コマンド定義 --------------------
 const commands = {
     'table-physical': [
-        { text: 'テーブル削除', class: 'red' }
+        { text: 'テーブル削除', class: 'red', action: deleteTable }
     ],
     'table-logical': [
         { text: '翻訳命名', class: 'green' }
     ],
     'col-physical': [
-        { text: 'カラム削除', class: 'red' }
+        { text: 'カラム削除', class: 'red', action: deleteColumn }
     ],
     'col-logical': [
         { text: '翻訳命名', class: 'green' }
@@ -88,23 +109,34 @@ const commands = {
     ]
 };
 
-// ボタンを生成
+
+// ボタン生成
 function renderSidebarButtons(btnConfigs) {
     sidebar.innerHTML = '';
+
     btnConfigs.forEach(cfg => {
         const btn = document.createElement('button');
         btn.className = `btn ${cfg.class || ''}`;
         btn.textContent = cfg.text || '';
         sidebar.appendChild(btn);
 
+        // actionをセット
+        if (cfg.action) {
+            btn.onclick = () => cfg.action();
+        } else {
+            btn.onclick = () => setTextToTarget(cfg.text);
+        }
+
         requestAnimationFrame(() => btn.classList.add('show'));
     });
 }
 
-// イベント委譲で動的要素にも対応
+// イベント委譲（フォーカスで切り替え）
 document.querySelector('.main').addEventListener('focusin', (e) => {
     const target = e.target;
     if (!target.classList.contains('input-table') && !target.classList.contains('input-col')) return;
+
+    currentTarget = target;
 
     const parent = target.parentElement;
     let key = null;
@@ -116,19 +148,14 @@ document.querySelector('.main').addEventListener('focusin', (e) => {
         }
     }
 
-    if (key && commands[key]) {
-        renderSidebarButtons(commands[key]);
-    } else {
-        sidebar.innerHTML = '';
-    }
+    if (key) renderSidebarButtons(commands[key]);
+    else sidebar.innerHTML = '';
 });
 
-document.querySelector('.main').addEventListener('focusout', (e) => {
-    const target = e.target;
-    if (!target.classList.contains('input-table') && !target.classList.contains('input-col')) return;
-
+// フォーカスアウトでフェード消去
+document.querySelector('.main').addEventListener('focusout', () => {
     Array.from(sidebar.children).forEach(btn => {
         btn.classList.remove('show');
-        setTimeout(() => btn.remove(), 300);
+        setTimeout(() => btn.remove(), 200);
     });
 });
