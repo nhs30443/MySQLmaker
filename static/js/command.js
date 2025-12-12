@@ -21,19 +21,64 @@ function setTextToTarget(text) {
     }
 }
 
+
 // -------------------- コマンド定義 --------------------
 const commands = {
     'table-logical': [
         { text: 'テーブル削除', class: 'red', action: deleteTable }
     ],
     'table-physical': [
-        { text: '翻訳命名', class: 'green' }
+        {
+            text: '翻訳命名',
+            class: 'green',
+            action: async () => {
+                if (!currentTarget) return;
+
+                // 現在のテーブルカードを取得
+                const tableCard = currentTarget.closest('.table-card');
+                if (!tableCard) return;
+
+                // 論理名 input と物理名 input を取得
+                const logicalInput = tableCard.querySelector('.table-logical .input-table');
+                const physicalInput = tableCard.querySelector('.table-physical .input-table');
+
+                if (!logicalInput || !physicalInput) return;
+
+                const jp = logicalInput.value;
+                if (!jp) return;
+
+                const converted = await logicalToPhysical(jp);
+                physicalInput.value = converted;
+            }
+        }
     ],
     'col-logical': [
         { text: 'カラム削除', class: 'red', action: deleteColumn }
     ],
     'col-physical': [
-        { text: '翻訳命名', class: 'green' }
+        {
+            text: '翻訳命名',
+            class: 'green',
+            action: async () => {
+                if (!currentTarget) return;
+
+                // 現在のカラム行を取得
+                const row = currentTarget.closest('.column-row');
+                if (!row) return;
+
+                // 論理名 input と物理名 input を取得
+                const logicalInput = row.querySelector('.col-logical .input-col');
+                const physicalInput = row.querySelector('.col-physical .input-col');
+
+                if (!logicalInput || !physicalInput) return;
+
+                const jp = logicalInput.value;
+                if (!jp) return;
+
+                const converted = await logicalToPhysical(jp);
+                physicalInput.value = converted;
+            }
+        }
     ],
     'col-key': [
         { text: 'PK', class: 'red' },
@@ -159,3 +204,48 @@ document.querySelector('.main').addEventListener('focusout', () => {
         setTimeout(() => btn.remove(), 200);
     });
 });
+
+// 翻訳モジュール
+window.translate = async function (text, target = "EN") {
+    try {
+        const res = await fetch("/api/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                q: text,
+                source: "JA",
+                target: target
+            })
+        });
+
+        const data = await res.json();
+
+        return { text: (data.translations && data.translations[0]?.text) || "" };
+    } catch (e) {
+        console.error("Translation Error:", e);
+        return { text: "" };
+    }
+};
+
+// 翻訳命名処理
+async function logicalToPhysical(jpText) {
+    const res = await window.translate(jpText, "EN");
+    const shortText = simplifyTranslation(res.text);
+    return toSnakeCase(shortText);
+}
+
+// ()の詳細説明を削除
+function simplifyTranslation(text) {
+    if (!text) return "";
+    return text.split("(")[0].trim();
+}
+
+// スネークケース変換
+function toSnakeCase(str) {
+    return str
+        .replace(/[\s\-()]+/g, "_")    // 空白・ハイフン・括弧をアンダースコアに
+        .replace(/[^\w]+/g, "")        // アルファベット数字以外は除去
+        .replace(/__+/g, "_")          // 連続アンダースコアはまとめる
+        .replace(/^_|_$/g, "")         // 先頭末尾のアンダースコアを削除
+        .toLowerCase();
+}
