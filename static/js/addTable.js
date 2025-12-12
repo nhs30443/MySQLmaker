@@ -60,7 +60,7 @@ function setupAddColumn(tableId) {
     });
 }
 
-// table1にカラム追加機能を適用
+// table1 にカラム追加機能を適用
 setupAddColumn('table1');
 
 

@@ -193,6 +193,7 @@ document.querySelector('.main').addEventListener('focusin', (e) => {
     const parent = target.parentElement;
     let key = null;
 
+    // parent が持つクラス名の中から commands のキーに一致するものを探して key に入れる
     for (const cls of Object.keys(commands)) {
         if (parent.classList.contains(cls)) {
             key = cls;
