@@ -1,7 +1,7 @@
 let tableCount = 1;
 let columnCount = { table1: 1 };
 
-// カラムテンプレート
+// -------------------- カラムテンプレート --------------------
 function createColumnRow(tableId, colNum) {
     return `
         <div id="${tableId}-column${colNum}-row" class="column-row">
@@ -45,12 +45,14 @@ function setupAddColumn(tableId) {
     const addColumnBtn = tableCard.querySelector('.add-column');
     const wrapper = tableCard.querySelector('.column-wrapper');
 
+    // 初回テーブル作成時のカウント
     if (!columnCount[tableId]) columnCount[tableId] = 1;
 
     addColumnBtn.addEventListener('click', () => {
         columnCount[tableId]++;
         const colNum = columnCount[tableId];
 
+        // 新しいカラム行を追加
         wrapper.insertAdjacentHTML(
             'beforeend',
             createColumnRow(tableId, colNum)
@@ -58,10 +60,11 @@ function setupAddColumn(tableId) {
     });
 }
 
+// table1にカラム追加機能を適用
 setupAddColumn('table1');
 
 
-// テーブルテンプレート
+// -------------------- テーブルテンプレート --------------------
 function createTableHtml(tableId) {
     return `
         <div id="${tableId}-logical" class="table-logical">
@@ -85,6 +88,7 @@ document.querySelector('.add-table-btn').addEventListener('click', () => {
     const newTableId = `table${tableCount}`;
     columnCount[newTableId] = 1;
 
+    // テーブルカード作成
     const main = document.querySelector('.main');
     const tableCard = document.createElement('div');
     tableCard.id = newTableId;
@@ -92,7 +96,9 @@ document.querySelector('.add-table-btn').addEventListener('click', () => {
 
     tableCard.innerHTML = createTableHtml(newTableId);
 
+    // 追加ボタンの直前に挿入
     main.insertBefore(tableCard, document.querySelector('.add-table-btn'));
 
+    // カラム追加機能を適用
     setupAddColumn(newTableId);
 });

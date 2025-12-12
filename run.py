@@ -4,13 +4,15 @@ import requests
 
 
 
+### ---------- 定数定義 ---------- ###
+DEEPL_API_KEY = "95ebf88f-acaf-4649-a9d6-12361cfce17e:fx"
+
 DB_USER = "root"
 DB_PASSWORD = "root"
 DB = "poke1000DB"
 
-DEEPL_API_KEY = "95ebf88f-acaf-4649-a9d6-12361cfce17e:fx"
 
-
+### ---------- Flask ---------- ###
 app = Flask(__name__)
 app.secret_key = "qawsedrftgyhujikolp"
 
@@ -35,7 +37,7 @@ def conn_db():
 ### ルート定義
 ############################################################################
 
-### ---------- API ---------- ###
+### -------------------- API --------------------
 # 翻訳APIプロキシ
 @app.route("/api/translate", methods=["POST"])
 def api_translate():
@@ -45,7 +47,6 @@ def api_translate():
         source_lang = data.get("source", "JA")
         target_lang = data.get("target", "EN")
 
-        # DeepL APIにPOST
         r = requests.post(
             "https://api-free.deepl.com/v2/translate",
             data={
@@ -56,13 +57,18 @@ def api_translate():
             },
             timeout=10
         )
-        print(r.json())
 
-        # DeepLのJSONレスポンスをそのまま返す
+        # DeepLの応答をテキストで取得
+        raw = r.text
+
+        # JSONかどうかチェック
+        if raw.strip().startswith("<"):
+            return jsonify({"error": "DeepLがHTMLを返しました"}), 500
+
         return jsonify(r.json())
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "ネットワークに接続されていません"}), 500
 
 
 # TOP

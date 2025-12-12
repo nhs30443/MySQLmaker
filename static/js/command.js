@@ -3,18 +3,21 @@ let currentTarget = null;
 
 
 // -------------------- アクション定義 --------------------
+// テーブル削除
 function deleteTable() {
     if (!currentTarget) return;
     const tableCard = currentTarget.closest('.table-card');
     if (tableCard) tableCard.remove();
 }
 
+// カラム削除
 function deleteColumn() {
     if (!currentTarget) return;
     const row = currentTarget.closest('.column-row');
     if (row) row.remove();
 }
 
+// ボタンの文字をそのままセット
 function setTextToTarget(text) {
     if (currentTarget) {
         currentTarget.value = text;
@@ -165,24 +168,28 @@ function renderSidebarButtons(btnConfigs) {
         btn.textContent = cfg.text || '';
         sidebar.appendChild(btn);
 
-        // actionをセット
+        // actionがあればセット、無ければinputへ文字反映
         if (cfg.action) {
             btn.onclick = () => cfg.action();
         } else {
             btn.onclick = () => setTextToTarget(cfg.text);
         }
 
+        // 出現アニメーション
         requestAnimationFrame(() => btn.classList.add('show'));
     });
 }
 
-// イベント委譲（フォーカスで切り替え）
+// フォーカスでコマンド切り替え
 document.querySelector('.main').addEventListener('focusin', (e) => {
     const target = e.target;
+
+    // 入力欄以外は無視
     if (!target.classList.contains('input-table') && !target.classList.contains('input-col')) return;
 
     currentTarget = target;
 
+    // 親の class からコマンドカテゴリを判定
     const parent = target.parentElement;
     let key = null;
 
@@ -193,11 +200,12 @@ document.querySelector('.main').addEventListener('focusin', (e) => {
         }
     }
 
+    // 対応するボタンを表示
     if (key) renderSidebarButtons(commands[key]);
     else sidebar.innerHTML = '';
 });
 
-// フォーカスアウトでフェード消去
+// フォーカスアウトでコマンドフェード消去
 document.querySelector('.main').addEventListener('focusout', () => {
     Array.from(sidebar.children).forEach(btn => {
         btn.classList.remove('show');
@@ -205,7 +213,7 @@ document.querySelector('.main').addEventListener('focusout', () => {
     });
 });
 
-// 翻訳モジュール
+// 翻訳APIモジュール
 window.translate = async function (text, target = "EN") {
     try {
         const res = await fetch("/api/translate", {
@@ -219,6 +227,12 @@ window.translate = async function (text, target = "EN") {
         });
 
         const data = await res.json();
+        
+        // エラーの場合にフラッシュメッセージ表示
+        if (data.error) {
+            showFlashMessage(data.error, "red");
+            return { text: "" };
+        }
 
         return { text: (data.translations && data.translations[0]?.text) || "" };
     } catch (e) {
