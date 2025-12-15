@@ -225,6 +225,7 @@ header {
   );
   border-top: 1px solid rgba(255,255,255,0.45);
   border-bottom: 1px solid rgba(0,0,0,0.25);
+  transition: background-color 0.2s ease;
 }
 
 .col-logical { background-color: #ffffff; }
@@ -238,11 +239,6 @@ header {
 
 .col-key input {
   color: #ffffff;
-}
-
-.col-key,
-.col-mold {
-  transition: background-color 0.2s ease;
 }
 
 /* ===== data-role切替 ===== */

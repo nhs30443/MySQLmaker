@@ -1,7 +1,6 @@
 let tableCount = 1;
 let columnCount = { table1: 1 };
 
-
 // -------------------- カラムテンプレート --------------------
 function createColumnRow(tableId, colNum) {
     return `
@@ -30,7 +29,7 @@ function createColumnRow(tableId, colNum) {
             <div id="${tableId}-column${colNum}-mold"
                  class="col-mold int"
                  data-role="column-type">
-                <input type="text" value="INT" class="input-col" placeholder="型" />
+                <input type="text" class="input-col" placeholder="型" />
             </div>
 
             <div id="${tableId}-column${colNum}-default"
@@ -38,6 +37,8 @@ function createColumnRow(tableId, colNum) {
                  data-role="column-default">
                 <input type="text" class="input-col" placeholder="デフォルト値" />
             </div>
+
+            <div class="col-ng" style="display: none"></div>
 
             <div id="${tableId}-column${colNum}-not-null"
                  class="col-constraint"
@@ -55,6 +56,10 @@ function createColumnRow(tableId, colNum) {
                 </label>
             </div>
 
+            <div class="col-reference" style="display: none">
+                <input type="text" class="input-col" placeholder="FK参照先" />
+            </div>
+
             <div id="${tableId}-column${colNum}-unique"
                  class="col-constraint"
                  data-role="column-unique">
@@ -65,7 +70,6 @@ function createColumnRow(tableId, colNum) {
         </div>
     `;
 }
-
 
 // -------------------- カラム追加処理 --------------------
 function setupAddColumn(tableId) {
@@ -87,10 +91,8 @@ function setupAddColumn(tableId) {
     });
 }
 
-
 // 初期テーブルに適用
 setupAddColumn('table1');
-
 
 // -------------------- テーブルテンプレート --------------------
 function createTableHtml(tableId) {
@@ -119,7 +121,6 @@ function createTableHtml(tableId) {
         </div>
     `;
 }
-
 
 // -------------------- テーブル追加処理 --------------------
 document.querySelector('[data-role="add-table"]').addEventListener('click', () => {

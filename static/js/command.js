@@ -140,7 +140,8 @@ const commands = {
     ],
     'col-key': [
         { text: 'PK', class: 'red' },
-        { text: 'FK', class: 'green' }
+        { text: 'FK', class: 'green' },
+        { text: '', class: 'yellow' }
     ],
     'col-mold': [
         { text: 'INT', class: 'yellow' },
@@ -285,6 +286,11 @@ function setupRoleInput(row) {
     const keyInput = row.querySelector('.col-key .input-col');
     if (!keyInput) return;
 
+    const defaultDiv = row.querySelector('.col-default');
+    const ngDiv = row.querySelector('.col-ng');
+    const refDiv = row.querySelector('.col-reference');
+    const autoDiv = row.querySelector('.col-constraint[data-role="column-auto-increment"]');
+
     keyInput.addEventListener('input', () => {
         const value = keyInput.value.trim().toUpperCase();
 
@@ -292,8 +298,22 @@ function setupRoleInput(row) {
 
         if (value === 'PK') {
             row.setAttribute('data-role', 'pk');
+            if (defaultDiv) defaultDiv.style.display = 'none';
+            if (ngDiv) ngDiv.style.display = '';
+            if (refDiv) refDiv.style.display = 'none';
+            if (autoDiv) autoDiv.style.display = '';
         } else if (value === 'FK') {
             row.setAttribute('data-role', 'fk');
+            if (defaultDiv) defaultDiv.style.display = '';
+            if (ngDiv) ngDiv.style.display = 'none';
+            if (refDiv) refDiv.style.display = '';
+            if (autoDiv) autoDiv.style.display = 'none'; // FK のとき非表示
+        } else {
+            row.setAttribute('data-role', '');
+            if (defaultDiv) defaultDiv.style.display = '';
+            if (ngDiv) ngDiv.style.display = 'none';
+            if (refDiv) refDiv.style.display = 'none';
+            if (autoDiv) autoDiv.style.display = '';
         }
     });
 }

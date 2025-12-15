@@ -48,11 +48,12 @@
                             <input type="text" class="input-col" placeholder="column_physical_name" />
                         </div>
                         <div id="table1-column1-mold" class="col-mold int" data-role="column-type">
-                            <input type="text" value="INT" class="input-col" placeholder="型" />
+                            <input type="text" class="input-col" placeholder="型" />
                         </div>
                         <div id="table1-column1-default" class="col-default" data-role="column-default">
                             <input type="text" class="input-col" placeholder="デフォルト値" />
                         </div>
+                        <div class="col-ng" style="display: none"></div>
                         <div id="table1-column1-not-null" class="col-constraint" data-role="column-not-null">
                             <label>
                                 <input type="checkbox" class="chk-col" /> NOT NULL
@@ -63,6 +64,9 @@
                             <label class="auto-increment">
                                 <input type="checkbox" class="chk-col" /> AUTO INCREMENT
                             </label>
+                        </div>
+                        <div class="col-reference" style="display: none">
+                            <input type="text" class="input-col" placeholder="FK参照先" />
                         </div>
                         <div id="table1-column1-unique" class="col-constraint" data-role="column-unique">
                             <label>
