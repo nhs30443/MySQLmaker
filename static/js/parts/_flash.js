@@ -12,6 +12,10 @@ function showFlashMessage(message, type = "success") {
   flash.className = `flash-message ${type}`;
   flash.textContent = message;
 
+  // タッチ／クリックで即削除
+  flash.addEventListener("click", () => flash.remove());
+  flash.addEventListener("touchstart", () => flash.remove());
+
   // 表示
   flashContainer.appendChild(flash);
 
