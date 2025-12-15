@@ -1,7 +1,6 @@
 const sidebar = document.querySelector('.sidebar');
 let currentTarget = null;
 
-
 // -------------------- アクション定義 --------------------
 // テーブル削除
 function deleteTable() {
@@ -21,9 +20,65 @@ function deleteColumn() {
 function setTextToTarget(text) {
     if (currentTarget) {
         currentTarget.value = text;
+
+        // inputイベント発火
+        currentTarget.dispatchEvent(
+            new Event('input', { bubbles: true })
+        );
     }
 }
 
+// -------------------- 補助関数 --------------------
+// 翻訳APIモジュール
+window.translate = async function (text, target = "EN") {
+    try {
+        const res = await fetch("/api/translate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                q: text,
+                source: "JA",
+                target: target
+            })
+        });
+
+        const data = await res.json();
+        
+        // エラーの場合にフラッシュメッセージ表示
+        if (data.error) {
+            showFlashMessage(data.error, "red");
+            return { text: "" };
+        }
+
+        return { text: (data.translations && data.translations[0]?.text) || "" };
+    } catch (e) {
+        console.error("Translation Error:", e);
+        return { text: "" };
+    }
+};
+
+// 翻訳命名処理
+async function logicalToPhysical(jpText) {
+    const res = await window.translate(jpText, "EN");
+    const shortText = simplifyTranslation(res.text);
+    return toSnakeCase(shortText);
+}
+
+// ()の詳細説明を削除
+function simplifyTranslation(text) {
+    if (!text) return "";
+    return text.split("(")[0].trim();
+}
+
+// スネークケース変換
+function toSnakeCase(str) {
+    return str
+        .replace(/[\s\-()]+/g, "_")    // 空白・ハイフン・括弧をアンダースコアに
+        .replace(/[^\w]+/g, "")        // アルファベット数字以外は除去
+        .replace(/__+/g, "_")          // 連続アンダースコアはまとめる
+        .replace(/^_|_$/g, "")         // 先頭末尾のアンダースコアを削除
+        .toLowerCase();
+}
 
 // -------------------- コマンド定義 --------------------
 const commands = {
@@ -157,8 +212,7 @@ const commands = {
     ]
 };
 
-
-// ボタン生成
+// -------------------- ボタン生成 --------------------
 function renderSidebarButtons(btnConfigs) {
     sidebar.innerHTML = '';
 
@@ -180,7 +234,7 @@ function renderSidebarButtons(btnConfigs) {
     });
 }
 
-// フォーカスでコマンド切り替え
+// -------------------- 入力フォーカス --------------------
 document.querySelector('.main').addEventListener('focusin', (e) => {
     const target = e.target;
 
@@ -206,7 +260,6 @@ document.querySelector('.main').addEventListener('focusin', (e) => {
     else sidebar.innerHTML = '';
 });
 
-// フォーカスアウトでコマンドフェード消去
 document.querySelector('.main').addEventListener('focusout', () => {
     Array.from(sidebar.children).forEach(btn => {
         btn.classList.remove('show');
@@ -214,53 +267,89 @@ document.querySelector('.main').addEventListener('focusout', () => {
     });
 });
 
-// 翻訳APIモジュール
-window.translate = async function (text, target = "EN") {
-    try {
-        const res = await fetch("/api/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                q: text,
-                source: "JA",
-                target: target
-            })
+// -------------------- カラム入力監視 --------------------
+function setupColumnInputObserver(root = document) {
+    const rows = root.querySelectorAll('.column-row');
+
+    rows.forEach(row => {
+        if (row.dataset.jsInitialized) return;
+
+        setupRoleInput(row);
+        setupMoldInput(row);
+        row.dataset.jsInitialized = 'true';
+    });
+}
+
+// PK / FK 切替
+function setupRoleInput(row) {
+    const keyInput = row.querySelector('.col-key .input-col');
+    if (!keyInput) return;
+
+    keyInput.addEventListener('input', () => {
+        const value = keyInput.value.trim().toUpperCase();
+
+        row.removeAttribute('data-role');
+
+        if (value === 'PK') {
+            row.setAttribute('data-role', 'pk');
+        } else if (value === 'FK') {
+            row.setAttribute('data-role', 'fk');
+        }
+    });
+}
+
+// INT / CHAR / OTHER 切替
+function setupMoldInput(row) {
+    const moldInput = row.querySelector('.col-mold .input-col');
+    if (!moldInput) return;
+
+    moldInput.addEventListener('input', () => {
+        const value = moldInput.value.trim();
+        row.removeAttribute('data-mold');
+        if (!value) return;
+
+        const v = value.toUpperCase();
+
+        const moldDef = commands['col-mold'].find(m => {
+            const t = m.text.toUpperCase();
+            if (/^VARCHAR\(N\)$/.test(t)) return /^VARCHAR\(\d+\)$/.test(v);
+            if (/^CHAR\(N\)$/.test(t)) return /^CHAR\(\d+\)$/.test(v);
+            if (/^DECIMAL\(P,S\)$/.test(t)) return /^DECIMAL\(\d+,\d+\)$/.test(v);
+            if (/^TIMESTAMP\(N\)$/.test(t)) return /^TIMESTAMP\(\d+\)$/.test(v);
+            return t === v;
         });
 
-        const data = await res.json();
-        
-        // エラーの場合にフラッシュメッセージ表示
-        if (data.error) {
-            showFlashMessage(data.error, "red");
-            return { text: "" };
-        }
-
-        return { text: (data.translations && data.translations[0]?.text) || "" };
-    } catch (e) {
-        console.error("Translation Error:", e);
-        return { text: "" };
-    }
-};
-
-// 翻訳命名処理
-async function logicalToPhysical(jpText) {
-    const res = await window.translate(jpText, "EN");
-    const shortText = simplifyTranslation(res.text);
-    return toSnakeCase(shortText);
+        // class を参照して背景色変更
+        const cls = moldDef.class.toLowerCase();
+        if (cls.includes('yellow')) row.setAttribute('data-mold', 'int');
+        else if (cls.includes('red')) row.setAttribute('data-mold', 'char');
+        else if (cls.includes('green')) row.setAttribute('data-mold', 'other');
+    });
 }
 
-// ()の詳細説明を削除
-function simplifyTranslation(text) {
-    if (!text) return "";
-    return text.split("(")[0].trim();
-}
+// -------------------- 初期ロード & DOM監視 --------------------
+setupColumnInputObserver();
 
-// スネークケース変換
-function toSnakeCase(str) {
-    return str
-        .replace(/[\s\-()]+/g, "_")    // 空白・ハイフン・括弧をアンダースコアに
-        .replace(/[^\w]+/g, "")        // アルファベット数字以外は除去
-        .replace(/__+/g, "_")          // 連続アンダースコアはまとめる
-        .replace(/^_|_$/g, "")         // 先頭末尾のアンダースコアを削除
-        .toLowerCase();
-}
+const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+            if (!(node instanceof HTMLElement)) return;
+
+            // table-card が追加された場合
+            if (node.classList.contains('table-card')) {
+                setupColumnInputObserver(node);
+            }
+
+            // column-row が追加された場合
+            if (node.classList.contains('column-row')) {
+                setupColumnInputObserver(node.parentElement || node);
+            }
+        });
+    });
+});
+
+// main配下を監視
+observer.observe(document.querySelector('.main'), {
+    childList: true,
+    subtree: true
+});

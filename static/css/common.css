@@ -75,6 +75,7 @@ header {
   color: black;
 }
 
+/* ===== サイドバー ===== */
 .sidebar {
   position: fixed;
   top: 60px;
@@ -123,17 +124,9 @@ header {
   overflow: hidden;
 }
 
-.sidebar button.longbtn {
-  font-size: 12px;
-}
-
-.sidebar button.longerbtn {
-  font-size: 10px;
-}
-
-.sidebar button.longestbtn {
-  font-size: 9px;
-}
+.sidebar button.longbtn { font-size: 12px; }
+.sidebar button.longerbtn { font-size: 10px; }
+.sidebar button.longestbtn { font-size: 9px; }
 
 .sidebar button:hover {
   transform: translateY(-2px) scale(1.03);
@@ -160,6 +153,7 @@ header {
   border-color: #4aa83b;
 }
 
+/* ===== メイン ===== */
 .main {
   min-width: max-content;
   height: 100%;
@@ -211,6 +205,7 @@ header {
   border-bottom: 2px solid #000;
 }
 
+/* ===== 共通セル ===== */
 .table-logical,
 .table-physical,
 .col-logical,
@@ -232,13 +227,8 @@ header {
   border-bottom: 1px solid rgba(0,0,0,0.25);
 }
 
-.col-logical {
-  background-color: #ffffff;
-}
-
-.col-physical {
-  background-color: #b7d0ff;
-}
+.col-logical { background-color: #ffffff; }
+.col-physical { background-color: #b7d0ff; }
 
 .col-key,
 .col-ng {
@@ -246,27 +236,33 @@ header {
   color: #ffffff;
 }
 
-.pk {
-  background-color: #ff0000;
-}
-
-.fk {
-  background-color: #04bc28;
-}
-
 .col-key input {
   color: #ffffff;
 }
 
-.col-mold.int {
+.col-key,
+.col-mold {
+  transition: background-color 0.2s ease;
+}
+
+/* ===== data-role切替 ===== */
+.column-row[data-role="pk"] .col-key {
+  background-color: #ff0000;
+}
+
+.column-row[data-role="fk"] .col-key {
+  background-color: #04bc28;
+}
+
+.column-row[data-mold="int"] .col-mold {
   background-color: #fffb8f;
 }
 
-.col-mold.char {
+.column-row[data-mold="char"] .col-mold {
   background-color: #ff9a91;
 }
 
-.col-mold.other {
+.column-row[data-mold="other"] .col-mold {
   background-color: #beffa6;
 }
 
@@ -298,6 +294,7 @@ header {
   justify-content: center;
 }
 
+/* ===== チェックボックス ===== */
 .chk-col {
   width: 18px;
   height: 18px;
@@ -305,9 +302,11 @@ header {
   border-radius: 4px;
   border: 2px solid rgba(0, 0, 0, 0.35);
   background: #fff;
-  background-image: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0.6),
-      rgba(0, 0, 0, 0.08));
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.6),
+    rgba(0, 0, 0, 0.08)
+  );
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   transition: 0.18s;
@@ -317,9 +316,10 @@ header {
   background-color: #04bc28;
   border-color: #1f357c;
   background-image: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.35),
-      rgba(0, 0, 0, 0.08));
+    to bottom,
+    rgba(255, 255, 255, 0.35),
+    rgba(0, 0, 0, 0.08)
+  );
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.28);
 }
 
@@ -335,6 +335,7 @@ header {
   margin-top: 1px;
 }
 
+/* ===== 追加UI ===== */
 .add-column {
   padding: 16px;
   text-align: center;
@@ -366,6 +367,7 @@ header {
   background: #f0f0f0;
 }
 
+/* ===== input ===== */
 .input-table,
 .input-col {
   width: 100%;
@@ -381,14 +383,11 @@ header {
   color: #ffffff;
 }
 
+/* ===== focus ===== */
 .col-logical:focus-within,
 .col-physical:focus-within,
 .col-key:focus-within,
-.col-key.pk:focus-within,
-.col-key.fk:focus-within,
-.col-mold.int:focus-within,
-.col-mold.char:focus-within,
-.col-mold.other:focus-within,
+.col-mold:focus-within,
 .col-default:focus-within,
 .col-reference:focus-within,
 .table-logical:focus-within,
