@@ -228,15 +228,18 @@ header {
   transition: background-color 0.2s ease;
 }
 
-.col-logical { background-color: #ffffff; }
-.col-physical { background-color: #b7d0ff; }
-
-.col-key,
+.col-logical {
+  background-color: #ffffff;
+}
+.col-physical {
+  background-color: #b7d0ff;
+}
+.col-key {
+  background-color: #bbb;
+}
 .col-ng {
   background-color: #999;
-  color: #ffffff;
 }
-
 .col-key input {
   color: #ffffff;
 }

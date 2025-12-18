@@ -47,7 +47,7 @@ window.translate = async function (text, target = "EN") {
         // エラーの場合にフラッシュメッセージ表示
         if (data.error) {
             showFlashMessage(data.error, "red");
-            return { text: "" };
+            return;
         }
 
         return { text: (data.translations && data.translations[0]?.text) || "" };
@@ -66,7 +66,6 @@ async function logicalToPhysical(jpText) {
 
 // ()の詳細説明を削除
 function simplifyTranslation(text) {
-    if (!text) return "";
     return text.split("(")[0].trim();
 }
 
@@ -103,7 +102,10 @@ const commands = {
                 if (!logicalInput || !physicalInput) return;
 
                 const jp = logicalInput.value;
-                if (!jp) return;
+                if (!jp) {
+                    showFlashMessage("翻訳対象がありません", "yellow");
+                    return;
+                };
 
                 const converted = await logicalToPhysical(jp);
                 physicalInput.value = converted;
@@ -131,7 +133,10 @@ const commands = {
                 if (!logicalInput || !physicalInput) return;
 
                 const jp = logicalInput.value;
-                if (!jp) return;
+                if (!jp) {
+                    showFlashMessage("翻訳対象がありません", "yellow");
+                    return;
+                };
 
                 const converted = await logicalToPhysical(jp);
                 physicalInput.value = converted;

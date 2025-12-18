@@ -46,7 +46,7 @@ def api_translate():
         text = data.get("q", "")
         source_lang = data.get("source", "JA")
         target_lang = data.get("target", "EN")
-
+    
         r = requests.post(
             "https://api-free.deepl.com/v2/translate",
             data={
@@ -63,7 +63,7 @@ def api_translate():
 
         # JSONかどうかチェック
         if raw.strip().startswith("<"):
-            return jsonify({"error": "DeepLがHTMLを返しました"}), 500
+            return jsonify({"error": "DeepLがエラーを返しました"}), 500
 
         return jsonify(r.json())
 
