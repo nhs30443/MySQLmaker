@@ -19,9 +19,15 @@
     <div class="app">
         <header>
             <div class="logo">MySQLmaker</div>
-            <div class="toggle-switch">
-                <div class="toggle-option active">左</div>
-                <div class="toggle-option">右</div>
+
+            <div class="header-buttons">
+                <button id="create-db-btn" class="create-db-btn">
+                    データベース作成
+                </button>
+                <div class="toggle-switch">
+                    <div class="toggle-option active">左</div>
+                    <div class="toggle-option">右</div>
+                </div>
             </div>
         </header>
 
@@ -87,6 +93,7 @@
     <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/addTable.js') }}"></script>
     <script src="{{ url_for('static', filename='js/command.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/createDB.js') }}"></script>
     <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
 
 </body>

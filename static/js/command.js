@@ -217,6 +217,9 @@ const commands = {
         { text: 'UUID()', class: 'green' },
         { text: '\'0.0\'', class: 'yellow' },
         { text: '\'1.0\'', class: 'yellow' },
+    ],
+    'col-reference': [
+        { text: 'table(column)', class: 'green' },
     ]
 };
 
