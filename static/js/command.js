@@ -281,7 +281,7 @@ function setupColumnInputObserver(root = document) {
     });
 }
 
-// PK / FK 切替
+// PK / FK & AUTO INCREMENT 切替
 function setupRoleInput(row) {
     const keyInput = row.querySelector('.col-key .input-col');
     if (!keyInput) return;
@@ -290,32 +290,48 @@ function setupRoleInput(row) {
     const ngDiv = row.querySelector('.col-ng');
     const refDiv = row.querySelector('.col-reference');
     const autoDiv = row.querySelector('.col-constraint[data-role="column-auto-increment"]');
+    const autoChk = autoDiv ? autoDiv.querySelector('.chk-col') : null;
 
-    keyInput.addEventListener('input', () => {
+    function applyState() {
         const value = keyInput.value.trim().toUpperCase();
 
         row.removeAttribute('data-role');
 
         if (value === 'PK') {
             row.setAttribute('data-role', 'pk');
-            if (defaultDiv) defaultDiv.style.display = 'none';
-            if (ngDiv) ngDiv.style.display = '';
-            if (refDiv) refDiv.style.display = 'none';
-            if (autoDiv) autoDiv.style.display = '';
+            defaultDiv.style.display = 'none';
+            ngDiv.style.display = '';
+            refDiv.style.display = 'none';
+            autoDiv.style.display = '';
         } else if (value === 'FK') {
             row.setAttribute('data-role', 'fk');
-            if (defaultDiv) defaultDiv.style.display = '';
-            if (ngDiv) ngDiv.style.display = 'none';
-            if (refDiv) refDiv.style.display = '';
-            if (autoDiv) autoDiv.style.display = 'none'; // FK のとき非表示
+            defaultDiv.style.display = '';
+            ngDiv.style.display = 'none';
+            refDiv.style.display = '';
+            autoDiv.style.display = 'none';
         } else {
             row.setAttribute('data-role', '');
-            if (defaultDiv) defaultDiv.style.display = '';
-            if (ngDiv) ngDiv.style.display = 'none';
-            if (refDiv) refDiv.style.display = 'none';
-            if (autoDiv) autoDiv.style.display = '';
+            defaultDiv.style.display = '';
+            refDiv.style.display = 'none';
+            autoDiv.style.display = '';
+            if (autoChk.checked) {
+                ngDiv.style.display = '';
+                defaultDiv.style.display = 'none';
+            } else {
+                ngDiv.style.display = 'none';
+                defaultDiv.style.display = '';
+            }
         }
-    });
+    }
+
+    // 入力変化で反映
+    keyInput.addEventListener('input', applyState);
+    if (autoChk) {
+        autoChk.addEventListener('change', applyState);
+    }
+
+    // 初期状態反映
+    applyState();
 }
 
 // INT / CHAR / OTHER 切替
