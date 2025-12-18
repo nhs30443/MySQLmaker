@@ -44,7 +44,7 @@ def api_translate():
     try:
         data = request.get_json(force=True) or {}
         text = data.get("q", "")
-        source_lang = data.get("source", "JA")
+        source_lang = data.get("source", "JP")
         target_lang = data.get("target", "EN")
     
         r = requests.post(
@@ -60,7 +60,7 @@ def api_translate():
 
         # DeepLの応答をテキストで取得
         raw = r.text
-
+        
         # JSONかどうかチェック
         if raw.strip().startswith("<"):
             return jsonify({"error": "DeepLがエラーを返しました"}), 500

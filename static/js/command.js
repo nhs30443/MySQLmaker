@@ -102,7 +102,8 @@ const commands = {
                 if (!logicalInput || !physicalInput) return;
 
                 const jp = logicalInput.value;
-                if (!jp) {
+                if (!jp.trim()) {
+                    logicalInput.value = "";
                     showFlashMessage("翻訳対象がありません", "yellow");
                     return;
                 };
@@ -133,7 +134,8 @@ const commands = {
                 if (!logicalInput || !physicalInput) return;
 
                 const jp = logicalInput.value;
-                if (!jp) {
+                if (!jp.trim()) {
+                    logicalInput.value = "";
                     showFlashMessage("翻訳対象がありません", "yellow");
                     return;
                 };
