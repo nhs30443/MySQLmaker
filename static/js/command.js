@@ -296,41 +296,69 @@ function setupColumnInputObserver(root = document) {
 // PK / FK & AUTO INCREMENT 切替
 function setupRoleInput(row) {
     const keyInput = row.querySelector('.col-key .input-col');
-    if (!keyInput) return;
+    const moldInput = row.querySelector('.col-mold .input-col');
+    if (!keyInput || !moldInput) return;
 
     const defaultDiv = row.querySelector('.col-default');
-    const ngDiv = row.querySelector('.col-ng');
+    const ngDiv1 = row.querySelector('.col-ng1');
+    const ngDiv2 = row.querySelector('.col-ng2');
     const refDiv = row.querySelector('.col-reference');
     const autoDiv = row.querySelector('.col-constraint[data-role="column-auto-increment"]');
     const autoChk = autoDiv ? autoDiv.querySelector('.chk-col') : null;
 
+    // AUTO_INCREMENT が許可される型か判定
+    function isAutoIncrementAllowed() {
+        const v = moldInput.value.trim().toUpperCase();
+        if (!v) return false;
+
+        // INT系のみ許可
+        return /^(TINYINT|SMALLINT|MEDIUMINT|INT|BIGINT)(\(\d+\))?$/.test(v);
+    }
+
     function applyState() {
         const value = keyInput.value.trim().toUpperCase();
+        const autoAllowed = isAutoIncrementAllowed();
 
         row.removeAttribute('data-key');
 
         if (value === 'PK') {
             row.setAttribute('data-key', 'pk');
             defaultDiv.style.display = 'none';
-            ngDiv.style.display = '';
+            ngDiv1.style.display = '';
             refDiv.style.display = 'none';
-            autoDiv.style.display = '';
+            if (autoAllowed) {
+                autoDiv.style.display = '';
+                ngDiv2.style.display = 'none';
+            } else {
+                autoDiv.style.display = 'none';
+                ngDiv2.style.display = '';
+            }
         } else if (value === 'FK') {
             row.setAttribute('data-key', 'fk');
             defaultDiv.style.display = '';
-            ngDiv.style.display = 'none';
+            ngDiv1.style.display = 'none';
             refDiv.style.display = '';
             autoDiv.style.display = 'none';
+            ngDiv2.style.display = 'none';
         } else {
             row.setAttribute('data-key', '');
             defaultDiv.style.display = '';
             refDiv.style.display = 'none';
             autoDiv.style.display = '';
-            if (autoChk.checked) {
-                ngDiv.style.display = '';
-                defaultDiv.style.display = 'none';
+            if (autoAllowed) {
+                autoDiv.style.display = '';
+                ngDiv2.style.display = 'none';
+                if (autoChk.checked) {
+                    ngDiv1.style.display = '';
+                    defaultDiv.style.display = 'none';
+                } else {
+                    ngDiv1.style.display = 'none';
+                    defaultDiv.style.display = '';
+                }
             } else {
-                ngDiv.style.display = 'none';
+                autoDiv.style.display = 'none';
+                ngDiv2.style.display = '';
+                ngDiv1.style.display = 'none';
                 defaultDiv.style.display = '';
             }
         }
@@ -354,7 +382,10 @@ function setupMoldInput(row) {
     moldInput.addEventListener('input', () => {
         const value = moldInput.value.trim();
         row.removeAttribute('data-mold');
-        if (!value) return;
+        if (!value) {
+            setupRoleInput(row);
+            return;
+        }
 
         const v = value.toUpperCase();
 
@@ -367,11 +398,20 @@ function setupMoldInput(row) {
             return t === v;
         });
 
+        // 未定義防止
+        if (!moldDef) {
+            setupRoleInput(row);
+            return;
+        }
+
         // class を参照して背景色変更
         const cls = moldDef.class.toLowerCase();
         if (cls.includes('yellow')) row.setAttribute('data-mold', 'int');
         else if (cls.includes('red')) row.setAttribute('data-mold', 'char');
         else if (cls.includes('green')) row.setAttribute('data-mold', 'other');
+
+        // 型変更後に AUTO_INCREMENT を再評価
+        setupRoleInput(row);
     });
 }
 

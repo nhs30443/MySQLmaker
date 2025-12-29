@@ -53,20 +53,20 @@
                         <div id="table1-column1-physical" class="col-physical" data-role="column-physical">
                             <input type="text" class="input-col" placeholder="column_physical_name" />
                         </div>
-                        <div id="table1-column1-mold" class="col-mold int" data-role="column-mold">
+                        <div id="table1-column1-mold" class="col-mold" data-role="column-mold">
                             <input type="text" class="input-col" placeholder="型" />
                         </div>
                         <div id="table1-column1-default" class="col-default" data-role="column-default">
                             <input type="text" class="input-col" placeholder="デフォルト値" />
                         </div>
-                        <div class="col-ng" style="display: none"></div>
+                        <div class="col-ng1" style="display: none"></div>
                         <div id="table1-column1-not-null" class="col-constraint" data-role="column-not-null">
                             <label>
                                 <input type="checkbox" class="chk-col" /> NOT NULL
                             </label>
                         </div>
                         <div id="table1-column1-auto-increment" class="col-constraint"
-                            data-role="column-auto-increment">
+                            data-role="column-auto-increment" style="display: none">
                             <label class="auto-increment">
                                 <input type="checkbox" class="chk-col" /> AUTO INCREMENT
                             </label>
@@ -74,6 +74,7 @@
                         <div class="col-reference" style="display: none" data-role="column-reference">
                             <input type="text" class="input-col" placeholder="FK参照先" />
                         </div>
+                        <div class="col-ng2"></div>
                         <div id="table1-column1-unique" class="col-constraint" data-role="column-unique">
                             <label>
                                 <input type="checkbox" class="chk-col" /> UNIQUE

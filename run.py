@@ -4,15 +4,14 @@ import requests
 
 
 
-### ---------- 定数定義 ---------- ###
+### -------------------- 定数定義 --------------------
 DEEPL_API_KEY = "95ebf88f-acaf-4649-a9d6-12361cfce17e:fx"
 
 DB_USER = "root"
 DB_PASSWORD = "root"
-DB = "poke1000DB"
 
 
-### ---------- Flask ---------- ###
+### -------------------- Flask --------------------
 app = Flask(__name__)
 app.secret_key = "qawsedrftgyhujikolp"
 
@@ -21,13 +20,24 @@ app.secret_key = "qawsedrftgyhujikolp"
 ### 関数定義
 ############################################################################
 
-# データベース接続
-def conn_db():
+# MySQL接続
+def conn_mySQL():
     conn = mysql.connector.connect(
         host = "127.0.0.1",
         user = DB_USER,
         password = DB_PASSWORD,
-        db = DB,
+        charset = "utf8"
+    )
+    return conn
+
+
+# データベース接続
+def conn_db(dbName):
+    conn = mysql.connector.connect(
+        host = "127.0.0.1",
+        user = DB_USER,
+        password = DB_PASSWORD,
+        db = dbName,
         charset = "utf8"
     )
     return conn
@@ -87,11 +97,7 @@ def create_db():
     # ここでSQL生成やDB作成処理を書く
     # （今は省略）
 
-    return jsonify({
-        "status": "ok",
-        "table": table_physical,
-        "column_count": len(columns)
-    })
+    return jsonify({"success": "データベースが作成されました"})
 
 
 # TOP

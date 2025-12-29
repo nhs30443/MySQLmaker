@@ -275,7 +275,8 @@ header {
   background-color: #d0d0d0;
 }
 
-.col-ng {
+.col-ng1,
+.col-ng2 {
   background-color: #999;
 }
 

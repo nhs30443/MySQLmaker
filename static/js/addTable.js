@@ -27,7 +27,7 @@ function createColumnRow(tableId, colNum) {
             </div>
 
             <div id="${tableId}-column${colNum}-mold"
-                 class="col-mold int"
+                 class="col-mold"
                  data-role="column-mold">
                 <input type="text" class="input-col" placeholder="型" />
             </div>
@@ -38,7 +38,7 @@ function createColumnRow(tableId, colNum) {
                 <input type="text" class="input-col" placeholder="デフォルト値" />
             </div>
 
-            <div class="col-ng" style="display: none"></div>
+            <div class="col-ng1" style="display: none"></div>
 
             <div id="${tableId}-column${colNum}-not-null"
                  class="col-constraint"
@@ -50,7 +50,8 @@ function createColumnRow(tableId, colNum) {
 
             <div id="${tableId}-column${colNum}-auto-increment"
                  class="col-constraint"
-                 data-role="column-auto-increment">
+                 data-role="column-auto-increment"
+                 style="display: none">
                 <label class="auto-increment">
                     <input type="checkbox" class="chk-col" /> AUTO INCREMENT
                 </label>
@@ -59,6 +60,8 @@ function createColumnRow(tableId, colNum) {
             <div class="col-reference" style="display: none" data-role="column-reference">
                 <input type="text" class="input-col" placeholder="FK参照先" />
             </div>
+            
+            <div class="col-ng2"></div>
 
             <div id="${tableId}-column${colNum}-unique"
                  class="col-constraint"
