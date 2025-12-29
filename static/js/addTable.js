@@ -28,7 +28,7 @@ function createColumnRow(tableId, colNum) {
 
             <div id="${tableId}-column${colNum}-mold"
                  class="col-mold int"
-                 data-role="column-type">
+                 data-role="column-mold">
                 <input type="text" class="input-col" placeholder="型" />
             </div>
 
@@ -56,7 +56,7 @@ function createColumnRow(tableId, colNum) {
                 </label>
             </div>
 
-            <div class="col-reference" style="display: none">
+            <div class="col-reference" style="display: none" data-role="column-reference">
                 <input type="text" class="input-col" placeholder="FK参照先" />
             </div>
 

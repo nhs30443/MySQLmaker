@@ -307,22 +307,22 @@ function setupRoleInput(row) {
     function applyState() {
         const value = keyInput.value.trim().toUpperCase();
 
-        row.removeAttribute('data-role');
+        row.removeAttribute('data-key');
 
         if (value === 'PK') {
-            row.setAttribute('data-role', 'pk');
+            row.setAttribute('data-key', 'pk');
             defaultDiv.style.display = 'none';
             ngDiv.style.display = '';
             refDiv.style.display = 'none';
             autoDiv.style.display = '';
         } else if (value === 'FK') {
-            row.setAttribute('data-role', 'fk');
+            row.setAttribute('data-key', 'fk');
             defaultDiv.style.display = '';
             ngDiv.style.display = 'none';
             refDiv.style.display = '';
             autoDiv.style.display = 'none';
         } else {
-            row.setAttribute('data-role', '');
+            row.setAttribute('data-key', '');
             defaultDiv.style.display = '';
             refDiv.style.display = 'none';
             autoDiv.style.display = '';

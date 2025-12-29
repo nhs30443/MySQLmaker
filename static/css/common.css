@@ -284,11 +284,11 @@ header {
 }
 
 /* ===== data-role切替 ===== */
-.column-row[data-role="pk"] .col-key {
+.column-row[data-key="pk"] .col-key {
   background-color: #ff0000;
 }
 
-.column-row[data-role="fk"] .col-key {
+.column-row[data-key="fk"] .col-key {
   background-color: #04bc28;
 }
 

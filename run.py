@@ -69,6 +69,29 @@ def api_translate():
 
     except Exception as e:
         return jsonify({"error": "ネットワークに接続されていません"}), 500
+    
+    
+# DB作成API
+@app.route('/api/createDb', methods=['POST'])
+def create_db():
+    data = request.get_json()
+
+    # デバッグ用
+    print(data)
+
+    table = data.get('table', {})
+    table_logical = table.get('table-logical')
+    table_physical = table.get('table-physical')
+    columns = table.get('columns', [])
+
+    # ここでSQL生成やDB作成処理を書く
+    # （今は省略）
+
+    return jsonify({
+        "status": "ok",
+        "table": table_physical,
+        "column_count": len(columns)
+    })
 
 
 # TOP
