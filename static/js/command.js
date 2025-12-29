@@ -321,6 +321,11 @@ function setupRoleInput(row) {
 
         row.removeAttribute('data-key');
 
+        // 型的に AUTO_INCREMENT 不可なら autoChk 強制 false
+        if (!autoAllowed && autoChk) {
+            autoChk.checked = false;
+        }
+
         if (value === 'PK') {
             row.setAttribute('data-key', 'pk');
             defaultDiv.style.display = 'none';
