@@ -92,7 +92,7 @@ def parse_tables(payload):
         
         # table_physical が未入力の場合
         if table_physical == "":
-            return
+            raise ValueError(f"テーブル{t_idx + 1}: テーブル物理名が未入力です")
 
         # テーブルに紐づく columns を取得
         columns = table.get('columns')
@@ -105,17 +105,34 @@ def parse_tables(payload):
 
             column_logical = column.get('column-logical')
             column_physical = normalize_physical_name(column.get('column-physical'))
-            column_key = convert_fullwidth_alpha_to_upper(column.get('column-key'))
-            column_mold = convert_fullwidth_alpha_to_upper(column.get('column-mold'))
-            column_default = convert_fullwidth_alpha_to_upper(column.get('column-default'))
+            
+            # column_physical が未入力の場合
+            if column_physical == "":
+                raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: カラム物理名が未入力です")
+            
+            try:
+                column_key = safe_convert(column.get('column-key'), 'column-key')
+                column_mold = safe_convert(column.get('column-mold'), 'column-mold')
+                column_default = safe_convert(column.get('column-default'), 'column-default')
+            except ValueError as e:
+                raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}-{e}")
+            
             column_not_null = column.get('column-not-null')
             column_auto_increment = column.get('column-auto-increment')
             column_unique = column.get('column-unique')
             column_reference = column.get('column-reference')
             
-            # column_physical が未入力の場合
-            if column_physical == "":
-                return
+
+
+# 安全な変換
+def safe_convert(text, field_name):
+    try:
+        return convert_fullwidth_alpha_to_upper(text)
+    except ValueError as e:
+        # シングルクォートが閉じていない場合
+        raise ValueError(
+            f"{field_name}: {e}"
+        )
             
             
 # 物理名正規化
