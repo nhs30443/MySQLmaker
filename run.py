@@ -32,15 +32,66 @@ def conn_mySQL():
 
 
 # データベース接続
-def conn_db(dbName):
+def conn_db(db_name):
     conn = mysql.connector.connect(
         host = "127.0.0.1",
         user = DB_USER,
         password = DB_PASSWORD,
-        db = dbName,
+        db = db_name,
         charset = "utf8"
     )
     return conn
+
+
+# JSON解析関数
+def parse_tables(payload):
+    # payload から tables を取得
+    tables = payload.get('tables')
+
+    # ===== tables を 0 ～ 要素数-1 まで順番に処理 =====
+    for t_idx in range(len(tables)):
+
+        # 現在処理中のテーブル情報
+        table = tables[t_idx]
+
+        # テーブル論理名・物理名（未入力でもOK）
+        table_logical  = table.get('table-logical')
+        table_physical = table.get('table-physical')
+
+        print(f'Table[{t_idx}]')
+        print(f'table-logical[{table_logical}]')
+        print(f'table-physical[{table_physical}]')
+
+        # テーブルに紐づく columns を取得
+        columns = table.get('columns')
+
+        # ===== columns を 0 ～ 要素数-1 まで順番に処理 =====
+        for c_idx in range(len(columns)):
+
+            # 現在処理中のカラム情報
+            column = columns[c_idx]
+
+            # カラムの各属性を取得（空文字・未入力でもOK）
+            column_logical = column.get('column-logical')
+            column_physical = column.get('column-physical')
+            column_key = column.get('column-key')
+            column_mold = column.get('column-mold')
+            column_default = column.get('column-default')
+            column_not_null = column.get('column-not-null')
+            column_auto_increment = column.get('column-auto-increment')
+            column_unique = column.get('column-unique')
+            column_reference = column.get('column-reference')
+            
+            print(f'column[{c_idx}]')
+            print(f'column-logical[{column_logical}]')
+            print(f'column-physical[{column_physical}]')
+            print(f'column-key[{column_key}]')
+            print(f'column-mold[{column_mold}]')
+            print(f'column-default[{column_default}]')
+            print(f'column-not-null[{column_not_null}]')
+            print(f'column-auto-increment[{column_auto_increment}]')
+            print(f'column-unique[{column_unique}]')
+            print(f'column-reference[{column_reference}]')
 
 
 ############################################################################
@@ -85,17 +136,7 @@ def api_translate():
 @app.route('/api/createDb', methods=['POST'])
 def create_db():
     data = request.get_json()
-
-    # デバッグ用
-    print(data)
-
-    table = data.get('table', {})
-    table_logical = table.get('table-logical')
-    table_physical = table.get('table-physical')
-    columns = table.get('columns', [])
-
-    # ここでSQL生成やDB作成処理を書く
-    # （今は省略）
+    parse_tables(data)
 
     return jsonify({"success": "データベースが作成されました"})
 
