@@ -1,6 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
 import mysql.connector
 import requests
+import unicodedata
+import re
 
 
 
@@ -9,6 +11,37 @@ DEEPL_API_KEY = "95ebf88f-acaf-4649-a9d6-12361cfce17e:fx"
 
 DB_USER = "root"
 DB_PASSWORD = "root"
+
+SQL_RESERVED_WORDS = {
+    "accessible", "account", "action", "active", "add", "after", "against",
+    "aggregate", "algorithm", "all", "alter", "always", "analyse", "analyze",
+    "and", "any", "as", "asc", "asensitive", "before", "between", "bigint",
+    "binary", "blob", "both", "by", "call", "cascade", "case", "change",
+    "char", "character", "check", "collate", "column", "condition",
+    "constraint", "continue", "convert", "create", "cross", "current_date",
+    "current_time", "current_timestamp", "database", "databases",
+    "day_hour", "day_minute", "day_second", "dec", "decimal", "declare",
+    "default", "delayed", "delete", "desc", "describe", "distinct",
+    "distinctrow", "drop", "else", "elseif", "end", "enum", "escape",
+    "exists", "explain", "false", "fetch", "float", "for", "force", "foreign",
+    "from", "fulltext", "grant", "group", "having", "high_priority",
+    "hour_minute", "hour_second", "if", "ignore", "index", "inner", "inout",
+    "insert", "int", "integer", "interval", "into", "is", "join", "key",
+    "keys", "kill", "leading", "left", "like", "limit", "lines", "load",
+    "localtime", "localtimestamp", "lock", "long", "longblob", "longtext",
+    "loop", "match", "mediumint", "mediumtext", "minute_second", "mod",
+    "natural", "not", "now", "null", "numeric", "on", "optimize", "option",
+    "or", "order", "outer", "primary", "procedure", "range", "read",
+    "references", "regexp", "release", "rename", "repeat", "replace",
+    "require", "restrict", "return", "revoke", "right", "rlike", "schema",
+    "schemas", "select", "set", "show", "smallint", "soname", "spatial",
+    "sql", "sql_big_result", "sql_calc_found_rows", "sql_small_result",
+    "ssl", "starting", "straight_join", "table", "terminated", "then",
+    "tinyint", "to", "trailing", "trigger", "true", "undo", "union",
+    "unique", "unlock", "unsigned", "update", "usage", "use", "using",
+    "values", "varbinary", "varchar", "varying", "when", "where",
+    "while", "with", "write", "xor", "year_month"
+}
 
 
 ### -------------------- Flask --------------------
@@ -43,7 +76,7 @@ def conn_db(db_name):
     return conn
 
 
-# JSON解析関数
+# JSON解析
 def parse_tables(payload):
     # payload から tables を取得
     tables = payload.get('tables')
@@ -54,13 +87,12 @@ def parse_tables(payload):
         # 現在処理中のテーブル情報
         table = tables[t_idx]
 
-        # テーブル論理名・物理名（未入力でもOK）
         table_logical  = table.get('table-logical')
-        table_physical = table.get('table-physical')
-
-        print(f'Table[{t_idx}]')
-        print(f'table-logical[{table_logical}]')
-        print(f'table-physical[{table_physical}]')
+        table_physical = normalize_physical_name(table.get('table-physical'))
+        
+        # table_physical が未入力の場合
+        if table_physical == "":
+            return
 
         # テーブルに紐づく columns を取得
         columns = table.get('columns')
@@ -71,27 +103,93 @@ def parse_tables(payload):
             # 現在処理中のカラム情報
             column = columns[c_idx]
 
-            # カラムの各属性を取得（空文字・未入力でもOK）
             column_logical = column.get('column-logical')
-            column_physical = column.get('column-physical')
-            column_key = column.get('column-key')
-            column_mold = column.get('column-mold')
-            column_default = column.get('column-default')
+            column_physical = normalize_physical_name(column.get('column-physical'))
+            column_key = convert_fullwidth_alpha_to_upper(column.get('column-key'))
+            column_mold = convert_fullwidth_alpha_to_upper(column.get('column-mold'))
+            column_default = convert_fullwidth_alpha_to_upper(column.get('column-default'))
             column_not_null = column.get('column-not-null')
             column_auto_increment = column.get('column-auto-increment')
             column_unique = column.get('column-unique')
             column_reference = column.get('column-reference')
             
-            print(f'column[{c_idx}]')
-            print(f'column-logical[{column_logical}]')
-            print(f'column-physical[{column_physical}]')
-            print(f'column-key[{column_key}]')
-            print(f'column-mold[{column_mold}]')
-            print(f'column-default[{column_default}]')
-            print(f'column-not-null[{column_not_null}]')
-            print(f'column-auto-increment[{column_auto_increment}]')
-            print(f'column-unique[{column_unique}]')
-            print(f'column-reference[{column_reference}]')
+            # column_physical が未入力の場合
+            if column_physical == "":
+                return
+            
+            
+# 物理名正規化
+def normalize_physical_name(name):
+    # 全角英数字・記号を半角に正規化
+    name = unicodedata.normalize('NFKC', name)
+    # 前後の空白を削除
+    name = name.strip()
+    # 途中の空白（半角・全角・タブ等）をすべて _ に置換
+    name = re.sub(r'\s+', '_', name)
+    # 使用可能文字以外を除去（英数字と_のみ残す）
+    name = re.sub(r'[^a-zA-Z0-9_]', '', name)
+    # 小文字化
+    name = name.lower()
+
+    # 先頭文字チェック（数字で始まる場合は _ を付与）
+    if name and name[0].isdigit():
+        name = "_" + name
+    # SQL予約語チェック
+    if name.lower() in SQL_RESERVED_WORDS:
+        name = name + "_rsv"
+
+    return name
+
+
+# 全角英字・数字・記号を半角に変換し、英字は大文字にする（'' で囲まれた部分は変更なし）
+def convert_fullwidth_alpha_to_upper(text):
+    if text is None:
+        return ""
+
+    result = []
+    in_single_quote = False
+
+    for ch in text:
+        # シングルクォートの判定
+        if ch == "'":
+            in_single_quote = not in_single_quote
+            result.append(ch)
+            continue
+        
+        # '' 内は変更なし
+        if in_single_quote:
+            result.append(ch)
+            continue
+
+        code = ord(ch)
+
+        # 全角ASCII文字（英字・数字・記号）
+        if 0xFF01 <= code <= 0xFF5E:
+            half = chr(code - 0xFEE0)
+            # 英字は大文字化
+            if 'a' <= half <= 'z' or 'A' <= half <= 'Z':
+                result.append(half.upper())
+            else:
+                result.append(half)
+                
+        # 半角ASCII文字（英字・数字・記号）
+        elif 0x21 <= code <= 0x7E:
+            # 英字は大文字化
+            if 'a' <= ch <= 'z' or 'A' <= ch <= 'Z':
+                result.append(ch.upper())
+            else:
+                # 数字・記号は保持
+                result.append(ch)
+                
+        # その他（日本語など）
+        else:
+            continue
+
+    # シングルクォートが閉じていない場合はエラー
+    if in_single_quote:
+        raise ValueError("シングルクォートが閉じていません")
+
+    return ''.join(result)
 
 
 ############################################################################
