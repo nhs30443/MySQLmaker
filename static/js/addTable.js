@@ -70,6 +70,14 @@ function createColumnRow(tableId, colNum) {
                     <input type="checkbox" class="chk-col" /> UNIQUE
                 </label>
             </div>
+            
+            <div class="col-on-delete" style="display: none" data-role="column-on-delete">
+                <input type="text" class="input-col" placeholder="ON DELETE" />
+            </div>
+            
+            <div class="col-on-update" style="display: none" data-role="column-on-update">
+                <input type="text" class="input-col" placeholder="ON UPDATE" />
+            </div>
         </div>
     `;
 }

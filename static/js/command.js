@@ -194,7 +194,7 @@ const commands = {
         { text: 'MULTIPOINT', class: 'green' },
         { text: 'MULTILINESTRING', class: 'green longbtn' },
         { text: 'MULTIPOLYGON', class: 'green longbtn' },
-        { text: 'GEOMETRYCOLLECTION', class: 'green longestbtn' },
+        { text: 'GEOMETRYCOLLECTION', class: 'green longestbtn' }
     ],
     'col-default': [
         { text: 'NULL', class: 'green' },
@@ -218,10 +218,22 @@ const commands = {
         { text: '\'[]\'', class: 'green' },
         { text: 'UUID()', class: 'green' },
         { text: '\'0.0\'', class: 'yellow' },
-        { text: '\'1.0\'', class: 'yellow' },
+        { text: '\'1.0\'', class: 'yellow' }
     ],
     'col-reference': [
-        { text: 'table(column)', class: 'green' },
+        { text: 'table(column)', class: 'green' }
+    ],
+    'col-on-delete': [
+        { text: 'CASCADE', class: 'green' },
+        { text: 'SET NULL', class: 'green' },
+        { text: 'RESTRICT', class: 'green' },
+        { text: 'NO ACTION', class: 'green' }
+    ],
+    'col-on-update': [
+        { text: 'CASCADE', class: 'green' },
+        { text: 'SET NULL', class: 'green' },
+        { text: 'RESTRICT', class: 'green' },
+        { text: 'NO ACTION', class: 'green' }
     ]
 };
 
@@ -305,6 +317,8 @@ function setupRoleInput(row) {
     const refDiv = row.querySelector('.col-reference');
     const autoDiv = row.querySelector('.col-constraint[data-role="column-auto-increment"]');
     const autoChk = autoDiv ? autoDiv.querySelector('.chk-col') : null;
+    const deleteDiv = row.querySelector('.col-on-delete');
+    const updateDiv = row.querySelector('.col-on-update');
 
     // AUTO_INCREMENT が許可される型か判定
     function isAutoIncrementAllowed() {
@@ -331,6 +345,8 @@ function setupRoleInput(row) {
             defaultDiv.style.display = 'none';
             ngDiv1.style.display = '';
             refDiv.style.display = 'none';
+            deleteDiv.style.display = 'none';
+            updateDiv.style.display = 'none';
             if (autoAllowed) {
                 autoDiv.style.display = '';
                 ngDiv2.style.display = 'none';
@@ -345,11 +361,15 @@ function setupRoleInput(row) {
             refDiv.style.display = '';
             autoDiv.style.display = 'none';
             ngDiv2.style.display = 'none';
+            deleteDiv.style.display = '';
+            updateDiv.style.display = '';
         } else {
             row.setAttribute('data-key', '');
             defaultDiv.style.display = '';
             refDiv.style.display = 'none';
             autoDiv.style.display = '';
+            deleteDiv.style.display = 'none';
+            updateDiv.style.display = 'none';
             if (autoAllowed) {
                 autoDiv.style.display = '';
                 ngDiv2.style.display = 'none';

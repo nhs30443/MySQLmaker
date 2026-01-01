@@ -55,7 +55,11 @@ dbBtn.addEventListener('click', () => {
                 "column-unique":
                     colEl.querySelector('[data-role="column-unique"] input')?.checked || false,
                 "column-reference":
-                    colEl.querySelector('[data-role="column-reference"] input')?.value || ""
+                    colEl.querySelector('[data-role="column-reference"] input')?.value || "",
+                "column-on-delete":
+                    colEl.querySelector('[data-role="column-on-delete"] input')?.value || "",
+                "column-on-update":
+                    colEl.querySelector('[data-role="column-on-update"] input')?.value || "",
             });
         });
 

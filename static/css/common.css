@@ -252,7 +252,9 @@ header {
 .col-default,
 .col-reference,
 .col-constraint,
-.col-ng {
+.col-ng,
+.col-on-delete,
+.col-on-update {
   padding: 8px;
   font-size: 15px;
   background-image: linear-gradient(to bottom,
@@ -307,6 +309,14 @@ header {
 
 .col-reference {
   background-color: #d9f2d9;
+}
+
+.col-on-delete {
+  background-color: #ffcccc;
+}
+
+.col-on-update {
+  background-color: #ffddbb;
 }
 
 .col-default {
@@ -425,6 +435,8 @@ header {
 .col-mold:focus-within,
 .col-default:focus-within,
 .col-reference:focus-within,
+.col-on-delete:focus-within,
+.col-on-update:focus-within,
 .table-logical:focus-within,
 .table-physical:focus-within {
   box-shadow:
