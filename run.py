@@ -76,7 +76,7 @@ def conn_db(db_name):
     return conn
 
 
-# JSON解析
+# テーブルjson解析
 def parse_tables(payload):
     # payload から tables を取得
     tables = payload.get('tables')
@@ -115,12 +115,25 @@ def parse_tables(payload):
                 column_mold = safe_convert(column.get('column-mold'), 'column-mold')
                 column_default = safe_convert(column.get('column-default'), 'column-default')
             except ValueError as e:
+                # シングルクォートが閉じていない場合
                 raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}-{e}")
             
             column_not_null = column.get('column-not-null')
             column_auto_increment = column.get('column-auto-increment')
             column_unique = column.get('column-unique')
             column_reference = column.get('column-reference')
+            
+            # ===== PK処理 =====
+            if column_key == "PK":
+                pass
+            
+            # ===== FK処理 =====
+            if column_key == "FK":
+                pass
+            
+            # ===== 通常カラム処理 =====
+            else:
+                pass
             
 
 # 安全な変換
