@@ -72,15 +72,23 @@ dbBtn.addEventListener('click', () => {
         },
         body: JSON.stringify(payload)
     })
-    .then(res => {
-        if (!res.ok) throw new Error('通信失敗');
-        return res.json();
+    .then(async res => {
+        const data = await res.json();
+
+        if (!res.ok) {
+            // Flaskのエラーメッセージをそのまま使用
+            throw new Error(data.error || '不明なエラー');
+        }
+
+        return data;
     })
     .then(data => {
         console.log('Flask応答:', data);
     })
     .catch(err => {
-        console.error(err);
+        console.error(err.message);
+        showFlashMessage(err.message, "red");
+
         // ボタン復活
         dbBtn.disabled = false;
         dbBtn.style.cursor = '';

@@ -123,7 +123,6 @@ def parse_tables(payload):
             column_reference = column.get('column-reference')
             
 
-
 # 安全な変換
 def safe_convert(text, field_name):
     try:
@@ -251,7 +250,11 @@ def api_translate():
 @app.route('/api/createDb', methods=['POST'])
 def create_db():
     data = request.get_json()
-    parse_tables(data)
+    
+    try:
+        parse_tables(data)
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
     return jsonify({"success": "データベースが作成されました"})
 
