@@ -131,11 +131,40 @@ def parse_tables(payload):
             
             # ===== FK処理 =====
             if column_key == "FK":
-                pass
+                try:
+                    ref_table, ref_column = parse_column_reference(column_reference, tables)
+                except ValueError as e:
+                    raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
             
             # ===== 通常カラム処理 =====
             else:
                 pass
+            
+
+# FK参照先解析
+def parse_column_reference(ref_text, tables):
+    # table(column) 形式か確認
+    match = re.match(r'^([a-zA-Z0-9_]+)\(([a-zA-Z0-9_]+)\)$', ref_text)
+    if not match:
+        raise ValueError(f"入力形式が不正です")
+
+    ref_table, ref_column = match.groups()
+
+    # table が存在するか確認
+    table_physical_list = [normalize_physical_name(t.get('table-physical')) for t in tables]
+    if ref_table not in table_physical_list:
+        raise ValueError(f"参照テーブルが存在しません")
+
+    # column が存在するか確認
+    ref_table_obj = tables[table_physical_list.index(ref_table)]
+    column_physical_list = [
+        normalize_physical_name(c.get('column-physical')) for c in ref_table_obj.get('columns', [])
+    ]
+    if ref_column not in column_physical_list:
+        raise ValueError(f"参照カラムが存在しません")
+
+    # 問題なければテーブル名とカラム名を返す
+    return ref_table, ref_column
             
 
 # 安全な変換
