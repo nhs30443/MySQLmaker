@@ -122,6 +122,8 @@ def parse_tables(payload):
             column_auto_increment = column.get('column-auto-increment')
             column_unique = column.get('column-unique')
             column_reference = column.get('column-reference')
+            column_on_delete = column.get('column-on-delete')
+            column_on_update = column.get('column-on-update')
             
             # ===== PK処理 =====
             if column_key == "PK":
