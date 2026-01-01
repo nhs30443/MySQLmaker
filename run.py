@@ -149,6 +149,8 @@ def parse_column_reference(ref_text, tables):
         raise ValueError(f"入力形式が不正です")
 
     ref_table, ref_column = match.groups()
+    ref_table = normalize_physical_name(ref_table)
+    ref_column = normalize_physical_name(ref_column)
 
     # table が存在するか確認
     table_physical_list = [normalize_physical_name(t.get('table-physical')) for t in tables]
@@ -157,14 +159,28 @@ def parse_column_reference(ref_text, tables):
 
     # column が存在するか確認
     ref_table_obj = tables[table_physical_list.index(ref_table)]
-    column_physical_list = [
-        normalize_physical_name(c.get('column-physical')) for c in ref_table_obj.get('columns', [])
-    ]
-    if ref_column not in column_physical_list:
+    column_objs = ref_table_obj.get('columns', [])
+    
+    # column_physical リストと column_obj を対応付け
+    column_dict = {
+        normalize_physical_name(c.get('column-physical')): c
+        for c in column_objs
+    }
+
+    if ref_column not in column_dict:
         raise ValueError(f"参照カラムが存在しません")
+
+    # PK または UNIQUE チェック
+    ref_col_obj = column_dict[ref_column]
+    col_key = safe_convert(ref_col_obj.get('column-key'), 'column-key')
+    col_unique = ref_col_obj.get('column-unique')
+
+    if col_key != "PK" and not col_unique:
+        raise ValueError(f"参照カラムは PK または UNIQUE である必要があります")
 
     # 問題なければテーブル名とカラム名を返す
     return ref_table, ref_column
+
             
 
 # 安全な変換
