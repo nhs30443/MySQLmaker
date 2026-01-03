@@ -131,10 +131,13 @@ def parse_tables(payload):
             
             # ===== FK処理 =====
             if column_key == "FK":
+                # FK参照先妥当性確認
                 try:
                     ref_table, ref_column = parse_column_reference(column_reference, tables)
                 except ValueError as e:
                     raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
+                
+                
             
             # ===== 通常カラム処理 =====
             else:
@@ -189,9 +192,7 @@ def safe_convert(text, field_name):
         return convert_fullwidth_alpha_to_upper(text)
     except ValueError as e:
         # シングルクォートが閉じていない場合
-        raise ValueError(
-            f"{field_name}: {e}"
-        )
+        raise ValueError(f"{field_name}: {e}")
             
             
 # 物理名正規化
@@ -281,7 +282,7 @@ def api_translate():
         text = data.get("q", "")
         source_lang = data.get("source", "JP")
         target_lang = data.get("target", "EN")
-    
+
         r = requests.post(
             "https://api-free.deepl.com/v2/translate",
             data={
@@ -293,17 +294,33 @@ def api_translate():
             timeout=10
         )
 
-        # DeepLの応答をテキストで取得
+        # HTTPステータス判定
+        if r.status_code in (401, 403):
+            return jsonify({"error": "DeepL APIキーが無効です"}), 401
+
+        if r.status_code == 429:
+            return jsonify({"error": "DeepL APIの利用制限に達しました"}), 429
+
+        if r.status_code >= 500:
+            return jsonify({"error": "DeepL側で障害が発生しています"}), 502
+
+        # レスポンス内容チェック
         raw = r.text
-        
-        # JSONかどうかチェック
+
+        # HTMLが返った場合
         if raw.strip().startswith("<"):
-            return jsonify({"error": "DeepLがエラーを返しました"}), 500
+            return jsonify({"error": "DeepLが不正なレスポンスを返しました"}), 502
 
         return jsonify(r.json())
 
-    except Exception as e:
+    except requests.exceptions.Timeout:
+        return jsonify({"error": "DeepLへの接続がタイムアウトしました"}), 504
+
+    except requests.exceptions.RequestException:
         return jsonify({"error": "ネットワークに接続されていません"}), 500
+
+    except Exception:
+        return jsonify({"error": "予期せぬエラーが発生しました"}), 500
     
     
 # DB作成API
@@ -319,6 +336,7 @@ def create_db():
     return jsonify({"success": "データベースが作成されました"})
 
 
+### -------------------- ページ --------------------
 # TOP
 @app.route('/')
 def index():
