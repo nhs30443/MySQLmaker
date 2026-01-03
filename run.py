@@ -130,18 +130,23 @@ def parse_tables(payload):
                 pass
             
             # ===== FK処理 =====
-            if column_key == "FK":
+            elif column_key == "FK":
                 # FK参照先妥当性確認
                 try:
                     ref_table, ref_column = parse_column_reference(column_reference, tables)
                 except ValueError as e:
                     raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
                 
-                
-            
             # ===== 通常カラム処理 =====
             else:
                 pass
+            
+    # FK依存関係からSQL実行順を導出
+    try:
+        execution_order = get_fk_execution_order(tables)
+    except ValueError:
+        # FKの循環参照エラー
+        raise
             
 
 # FK参照先解析
@@ -184,7 +189,111 @@ def parse_column_reference(ref_text, tables):
     # 問題なければテーブル名とカラム名を返す
     return ref_table, ref_column
 
-            
+
+# FK依存関係からSQL実行順を導出
+def get_fk_execution_order(tables):
+    # 正規化名一覧
+    table_names = [
+        normalize_physical_name(t.get('table-physical'))
+        for t in tables
+    ]
+
+    # 正規化名 → オリジナル名
+    original_table_map = {
+        normalize_physical_name(t.get('table-physical')): t.get('table-physical')
+        for t in tables
+    }
+    original_column_map = {
+        normalize_physical_name(t.get('table-physical')): {
+            normalize_physical_name(c.get('column-physical')): c.get('column-physical')
+            for c in t.get('columns', [])
+        }
+        for t in tables
+    }
+
+    fk_edges = []
+
+    graph = {name: set() for name in table_names}
+    indegree = {name: 0 for name in table_names}
+
+    # ===== FK依存関係収集 =====
+    for table in tables:
+        fk_table_norm = normalize_physical_name(table.get('table-physical'))
+        fk_table_org = table.get('table-physical')
+
+        for column in table.get('columns', []):
+            column_key = safe_convert(column.get('column-key'), 'column-key')
+            if column_key != "FK":
+                continue
+
+            ref_text = column.get('column-reference')
+            ref_table_norm, ref_column_norm = parse_column_reference(ref_text, tables)
+
+            from_column_org = column.get('column-physical')
+            from_column_norm = normalize_physical_name(from_column_org)
+            to_column_org = original_column_map[ref_table_norm][ref_column_norm]
+
+            # 意味のない自己参照は弾く
+            if (
+                fk_table_norm == ref_table_norm
+                and from_column_norm == ref_column_norm
+            ):
+                raise ValueError(
+                    f"意味のない自己参照FKです: "
+                    f"{fk_table_org}({from_column_org}) → "
+                    f"{fk_table_org}({to_column_org})"
+                )
+
+            # FK詳細
+            fk_edges.append({
+                "from_table": fk_table_org,
+                "from_column": from_column_org,
+                "to_table": original_table_map[ref_table_norm],
+                "to_column": to_column_org
+            })
+
+            # 自己参照FKは依存に含めない
+            if ref_table_norm == fk_table_norm:
+                continue
+
+            if fk_table_norm not in graph[ref_table_norm]:
+                graph[ref_table_norm].add(fk_table_norm)
+                indegree[fk_table_norm] += 1
+
+    # ===== トポロジカルソート =====
+    queue = [t for t in table_names if indegree[t] == 0]
+    execution_order = []
+
+    while queue:
+        current = queue.pop(0)
+        execution_order.append(current)
+
+        for nxt in graph[current]:
+            indegree[nxt] -= 1
+            if indegree[nxt] == 0:
+                queue.append(nxt)
+
+    # ===== 循環参照チェック =====
+    if len(execution_order) != len(table_names):
+        unresolved_tables = {
+            original_table_map[t]
+            for t in table_names
+            if t not in execution_order
+        }
+
+        unresolved_details = [
+            f"{e['from_table']}({e['from_column']}) → "
+            f"{e['to_table']}({e['to_column']})"
+            for e in fk_edges
+            if e["from_table"] in unresolved_tables
+            and e["from_table"] != e["to_table"]
+        ]
+
+        raise ValueError("FKの循環参照が検出されました: " +" / ".join(unresolved_details))
+
+    # 元の物理名で実行順を返す
+    return [original_table_map[t] for t in execution_order]
+
 
 # 安全な変換
 def safe_convert(text, field_name):
@@ -331,6 +440,7 @@ def create_db():
     try:
         parse_tables(data)
     except ValueError as e:
+        # エラーがあった場合
         return jsonify({"error": str(e)}), 400
 
     return jsonify({"success": "データベースが作成されました"})
