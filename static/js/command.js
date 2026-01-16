@@ -305,20 +305,22 @@ function setupColumnInputObserver(root = document) {
     });
 }
 
-// PK / FK & AUTO INCREMENT 切替
+// PK / FK & AUTO INCREMENT / UNIQUE 切替
 function setupRoleInput(row) {
     const keyInput = row.querySelector('.col-key .input-col');
     const moldInput = row.querySelector('.col-mold .input-col');
     if (!keyInput || !moldInput) return;
 
     const defaultDiv = row.querySelector('.col-default');
-    const ngDiv1 = row.querySelector('.col-ng1');
-    const ngDiv2 = row.querySelector('.col-ng2');
     const refDiv = row.querySelector('.col-reference');
     const autoDiv = row.querySelector('.col-constraint[data-role="column-auto-increment"]');
-    const autoChk = autoDiv ? autoDiv.querySelector('.chk-col') : null;
+    const autoChk = autoDiv.querySelector('.chk-col');
+    const uniqueDiv = row.querySelector('.col-constraint[data-role="column-unique"]');
+    const uniqueChk = uniqueDiv.querySelector('.chk-col');
     const deleteDiv = row.querySelector('.col-on-delete');
     const updateDiv = row.querySelector('.col-on-update');
+    const ngDiv1 = row.querySelector('.col-ng1');
+    const ngDiv2 = row.querySelector('.col-ng2');
 
     // AUTO_INCREMENT が許可される型か判定
     function isAutoIncrementAllowed() {
@@ -336,17 +338,17 @@ function setupRoleInput(row) {
         row.removeAttribute('data-key');
 
         // 型的に AUTO_INCREMENT 不可なら autoChk 強制 false
-        if (!autoAllowed && autoChk) {
+        if (!autoAllowed) {
             autoChk.checked = false;
         }
 
         if (value === 'PK') {
             row.setAttribute('data-key', 'pk');
             defaultDiv.style.display = 'none';
-            ngDiv1.style.display = '';
             refDiv.style.display = 'none';
             deleteDiv.style.display = 'none';
             updateDiv.style.display = 'none';
+            ngDiv1.style.display = '';
             if (autoAllowed) {
                 autoDiv.style.display = '';
                 ngDiv2.style.display = 'none';
@@ -356,44 +358,38 @@ function setupRoleInput(row) {
             }
         } else if (value === 'FK') {
             row.setAttribute('data-key', 'fk');
-            defaultDiv.style.display = '';
-            ngDiv1.style.display = 'none';
             refDiv.style.display = '';
             autoDiv.style.display = 'none';
-            ngDiv2.style.display = 'none';
             deleteDiv.style.display = '';
             updateDiv.style.display = '';
+            ngDiv2.style.display = 'none';
+            if (uniqueChk.checked) {
+                defaultDiv.style.display = 'none';
+                ngDiv1.style.display = '';
+            } else {
+                defaultDiv.style.display = '';
+                ngDiv1.style.display = 'none';
+            }
         } else {
             row.setAttribute('data-key', '');
-            defaultDiv.style.display = '';
             refDiv.style.display = 'none';
-            autoDiv.style.display = '';
+            autoDiv.style.display = 'none';
             deleteDiv.style.display = 'none';
             updateDiv.style.display = 'none';
-            if (autoAllowed) {
-                autoDiv.style.display = '';
-                ngDiv2.style.display = 'none';
-                if (autoChk.checked) {
-                    ngDiv1.style.display = '';
-                    defaultDiv.style.display = 'none';
-                } else {
-                    ngDiv1.style.display = 'none';
-                    defaultDiv.style.display = '';
-                }
+            ngDiv2.style.display = '';
+            if (uniqueChk.checked) {
+                defaultDiv.style.display = 'none';
+                ngDiv1.style.display = '';
             } else {
-                autoDiv.style.display = 'none';
-                ngDiv2.style.display = '';
-                ngDiv1.style.display = 'none';
                 defaultDiv.style.display = '';
+                ngDiv1.style.display = 'none';
             }
         }
     }
 
     // 入力変化で反映
     keyInput.addEventListener('input', applyState);
-    if (autoChk) {
-        autoChk.addEventListener('change', applyState);
-    }
+    uniqueChk.addEventListener('change', applyState);
 
     // 初期状態反映
     applyState();

@@ -80,6 +80,8 @@ def conn_db(db_name):
 def parse_tables(payload):
     # payload から tables を取得
     tables = payload.get('tables')
+    table_sql_list = []
+    table_physical_set = set()
 
     # ===== tables を 0 ～ 要素数-1 まで順番に処理 =====
     for t_idx in range(len(tables)):
@@ -93,9 +95,22 @@ def parse_tables(payload):
         # table_physical が未入力の場合
         if table_physical == "":
             raise ValueError(f"テーブル{t_idx + 1}: テーブル物理名が未入力です")
+        
+        # 同名テーブル検知
+        if table_physical in table_physical_set:
+            raise ValueError(f"テーブル{t_idx + 1}: テーブル物理名「{table_physical}」が重複しています")
+        table_physical_set.add(table_physical)
+        
+        table_sql = f"CREATE TABLE {table_physical} (\n"
 
         # テーブルに紐づく columns を取得
         columns = table.get('columns')
+        column_sql_list = []
+        pk_auto_increment_column = None
+        pk_other_columns = []
+        fk_constraint_list = []
+        auto_increment_pk_columns = []
+        seen_column_physical = set()
 
         # ===== columns を 0 ～ 要素数-1 まで順番に処理 =====
         for c_idx in range(len(columns)):
@@ -110,36 +125,94 @@ def parse_tables(payload):
             if column_physical == "":
                 raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: カラム物理名が未入力です")
             
-            try:
-                column_key = safe_convert(column.get('column-key'), 'column-key')
-                column_mold = safe_convert(column.get('column-mold'), 'column-mold')
-                column_default = safe_convert(column.get('column-default'), 'column-default')
-            except ValueError as e:
-                # シングルクォートが閉じていない場合
-                raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}-{e}")
+            # 同名カラムチェック
+            if column_physical in seen_column_physical:
+                raise ValueError(f"テーブル{t_idx + 1}: カラム物理名「{column_physical}」が重複しています")
+            seen_column_physical.add(column_physical)
             
             column_not_null = column.get('column-not-null')
-            column_auto_increment = column.get('column-auto-increment')
             column_unique = column.get('column-unique')
-            column_reference = column.get('column-reference')
-            column_on_delete = column.get('column-on-delete')
-            column_on_update = column.get('column-on-update')
+            
+            try:
+                column_key = safe_convert(column.get('column-key'))
+                column_mold = safe_convert(column.get('column-mold'))
+                if column_mold == "":
+                    raise ValueError("カラム型が未入力です")
+                if column_key != "PK" and not column_unique:
+                    column_default = safe_convert(column.get('column-default'))
+            except ValueError as e:
+                # シングルクォートが閉じていない場合
+                raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
+            
+            column_sql = f"  {column_physical} {column_mold}"
+            
+            if column_not_null:
+                column_sql += " NOT NULL"
+            if column_unique:
+                column_sql += " UNIQUE"
+            if column_key != "PK" and not column_unique and column_default != "":
+                column_sql += f" DEFAULT {column_default}"
             
             # ===== PK処理 =====
             if column_key == "PK":
-                pass
+                column_auto_increment = column.get('column-auto-increment')
+
+                if column_auto_increment:
+                    if pk_auto_increment_column is not None:
+                        raise ValueError(f"テーブル{t_idx + 1}: AUTO_INCREMENT は1カラムのみ指定可能です")
+                    pk_auto_increment_column = column_physical
+                    column_sql += " AUTO_INCREMENT"
+                else:
+                    pk_other_columns.append(column_physical)
             
             # ===== FK処理 =====
             elif column_key == "FK":
+                column_reference = column.get('column-reference')
+                column_on_delete = normalize_fk_constraint(column.get('column-on-delete'))
+                column_on_update = normalize_fk_constraint(column.get('column-on-update'))
                 # FK参照先妥当性確認
                 try:
                     ref_table, ref_column = parse_column_reference(column_reference, tables)
                 except ValueError as e:
                     raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
                 
+                fk_constraint_list.append({
+                    "column": column_physical,
+                    "ref_table": ref_table,
+                    "ref_column": ref_column,
+                    "on_delete": column_on_delete,
+                    "on_update": column_on_update
+                })
+                
             # ===== 通常カラム処理 =====
             else:
                 pass
+            
+            column_sql_list.append(column_sql)
+            
+        # ===== PRIMARY KEY 制約付与 =====
+        pk_columns = []
+        if pk_auto_increment_column:
+            pk_columns.append(pk_auto_increment_column)
+        pk_columns.extend(pk_other_columns)
+
+        if pk_columns:
+            pk_sql = f"  PRIMARY KEY ({', '.join(pk_columns)})"
+            column_sql_list.append(pk_sql)
+            
+        # ===== FOREIGN KEY 制約付与 =====
+        for fk in fk_constraint_list:
+            fk_sql = (f"  FOREIGN KEY ({fk['column']}) REFERENCES {fk['ref_table']} ({fk['ref_column']})")
+            if fk['on_delete']:
+                fk_sql += f" ON DELETE {fk['on_delete']}"
+            if fk['on_update']:
+                fk_sql += f" ON UPDATE {fk['on_update']}"
+            column_sql_list.append(fk_sql)
+            
+        # SQL完成
+        table_sql += ",\n".join(column_sql_list)
+        table_sql += "\n);"
+        table_sql_list.append(table_sql)
             
     # FK依存関係からSQL実行順を導出
     try:
@@ -180,7 +253,7 @@ def parse_column_reference(ref_text, tables):
 
     # PK または UNIQUE チェック
     ref_col_obj = column_dict[ref_column]
-    col_key = safe_convert(ref_col_obj.get('column-key'), 'column-key')
+    col_key = safe_convert(ref_col_obj.get('column-key'))
     col_unique = ref_col_obj.get('column-unique')
 
     if col_key != "PK" and not col_unique:
@@ -222,7 +295,7 @@ def get_fk_execution_order(tables):
         fk_table_org = table.get('table-physical')
 
         for column in table.get('columns', []):
-            column_key = safe_convert(column.get('column-key'), 'column-key')
+            column_key = safe_convert(column.get('column-key'))
             if column_key != "FK":
                 continue
 
@@ -296,12 +369,12 @@ def get_fk_execution_order(tables):
 
 
 # 安全な変換
-def safe_convert(text, field_name):
+def safe_convert(text):
     try:
         return convert_fullwidth_alpha_to_upper(text)
-    except ValueError as e:
+    except ValueError:
         # シングルクォートが閉じていない場合
-        raise ValueError(f"{field_name}: {e}")
+        raise
             
             
 # 物理名正規化
@@ -378,6 +451,40 @@ def convert_fullwidth_alpha_to_upper(text):
     return ''.join(result)
 
 
+# FK制約正規化
+def normalize_fk_constraint(text):
+    if text is None:
+        return ""
+
+    result = []
+
+    for ch in text:
+        code = ord(ch)
+
+        # 全角英字を半角化
+        if 0xFF21 <= code <= 0xFF3A or 0xFF41 <= code <= 0xFF5A:
+            ch = chr(code - 0xFEE0)
+        # 全角スペースを半角スペースに変換
+        elif code == 0x3000:
+            ch = ' '
+
+        # 英字なら大文字化
+        if 'a' <= ch <= 'z' or 'A' <= ch <= 'Z':
+            result.append(ch.upper())
+        # スペースを許可
+        elif ch == ' ':
+            result.append(' ')
+        # 英字・スペース以外は無視
+        else:
+            continue
+
+    s = ''.join(result)
+    # 連続空白を半角1つにまとめて前後空白削除
+    s = re.sub(r'\s+', ' ', s).strip()
+
+    return s
+
+
 ############################################################################
 ### ルート定義
 ############################################################################
@@ -433,7 +540,7 @@ def api_translate():
     
     
 # DB作成API
-@app.route('/api/createDb', methods=['POST'])
+@app.route('/api/create_db', methods=['POST'])
 def create_db():
     data = request.get_json()
     
@@ -450,13 +557,13 @@ def create_db():
 # TOP
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return redirect(url_for('make_db'))
 
 
 # DB作成ページ
-@app.route('/createDB')
-def createDB():
-    return render_template("createDB.html")
+@app.route('/make_db')
+def make_db():
+    return render_template("make-db.html")
 
 
 ############################################################################

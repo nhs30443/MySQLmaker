@@ -69,7 +69,7 @@ dbBtn.addEventListener('click', () => {
     console.log('送信JSON', JSON.stringify(payload, null, 2));
 
     // -------------------- Flaskへ送信 --------------------
-    fetch('/api/createDb', {
+    fetch('/api/create_db', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
