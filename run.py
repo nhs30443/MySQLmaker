@@ -8,10 +8,10 @@ import re
 
 ### -------------------- 定数定義 --------------------
 DEEPL_API_KEY = "95ebf88f-acaf-4649-a9d6-12361cfce17e:fx"
-
 DB_USER = "root"
 DB_PASSWORD = "root"
 
+TEMP_DB_NAME = "__mysqlmaker_tmp_db__"
 SQL_RESERVED_WORDS = {
     "accessible", "account", "action", "active", "add", "after", "against",
     "aggregate", "algorithm", "all", "alter", "always", "analyse", "analyze",
@@ -54,7 +54,7 @@ app.secret_key = "qawsedrftgyhujikolp"
 ############################################################################
 
 # MySQL接続
-def conn_mySQL():
+def conn_mysql():
     conn = mysql.connector.connect(
         host = "127.0.0.1",
         user = DB_USER,
@@ -104,7 +104,7 @@ def parse_tables(payload):
             raise ValueError(f"テーブル{t_idx + 1}: テーブル物理名「{table_physical}」が重複しています")
         table_physical_set.add(table_physical)
         
-        # SQL生成
+        # SQL 生成
         table_sql = f"CREATE TABLE {table_physical} (\n"
 
         # テーブルに紐づく columns を取得
@@ -158,7 +158,7 @@ def parse_tables(payload):
                 column_not_null = column.get('column-not-null')
                 column_unique = column.get('column-unique')
                 
-            # SQL生成
+            # SQL 生成
             column_sql = f"  {column_physical} {column_mold}"
             
             if column_not_null:
@@ -251,7 +251,21 @@ def parse_tables(payload):
     except ValueError:
         # FKの循環参照エラー
         raise
-            
+    
+    # table_physical → SQL のマップを作成
+    table_sql_map = {
+        normalize_physical_name(t.get('table-physical')): sql
+        for t, sql in zip(tables, table_sql_list)
+    }
+
+    # 実行順に SQL をソート
+    sorted_sql_list = [
+        table_sql_map[name]
+        for name in execution_order
+    ]
+    
+    return sorted_sql_list, normalized_json
+
 
 # FK参照先解析
 def parse_column_reference(ref_text, tables):
@@ -395,8 +409,7 @@ def get_fk_execution_order(tables):
 
         raise ValueError("FKの循環参照が検出されました: " +" / ".join(unresolved_details))
 
-    # 元の物理名で実行順を返す
-    return [original_table_map[t] for t in execution_order]
+    return execution_order
 
 
 # 安全な変換
@@ -516,6 +529,70 @@ def normalize_fk_constraint(text):
     return s
 
 
+# DB作成SQL検証
+def validate_sql(sql_list):
+    con = conn_mysql()
+    cur = con.cursor()
+
+    try:
+        # 一時DB作成
+        cur.execute(f"CREATE DATABASE {TEMP_DB_NAME}")
+        cur.execute(f"USE {TEMP_DB_NAME}")
+
+        # SQL仮実行
+        for sql in sql_list:
+            cur.execute(sql)
+            
+    except mysql.connector.Error as e:
+        raise ValueError(f"SQL検証エラー: {e.msg}")
+    
+    finally:
+        try:
+            # 一時DB削除
+            cur.execute(f"DROP DATABASE {TEMP_DB_NAME}")
+        except:
+            pass
+
+        cur.close()
+        con.close()
+
+    return True
+
+
+# 新規DB作成
+def execute_create_db_sql(sql_list, db_name):
+    con = conn_mysql()
+    cur = con.cursor()
+
+    db_created = False
+
+    try:
+        # DB作成
+        cur.execute(f"CREATE DATABASE {db_name}")
+        db_created = True
+
+        cur.execute(f"USE {db_name}")
+
+        # SQL実行
+        for sql in sql_list:
+            cur.execute(sql)
+
+    except mysql.connector.Error as e:
+        if db_created:
+            try:
+                # DB新規作成成功 & エラーがあった場合DB削除
+                cur.execute(f"DROP DATABASE {db_name}")
+            except:
+                pass
+        raise ValueError(f"予期せぬSQLエラー: {e.msg}")
+
+    finally:
+        cur.close()
+        con.close()
+
+    return True
+
+
 ############################################################################
 ### ルート定義
 ############################################################################
@@ -576,7 +653,15 @@ def create_db():
     data = request.get_json()
     
     try:
-        parse_tables(data)
+        sql_list, tables_json = parse_tables(data)
+
+        # 仮実行で検証
+        validate_sql(sql_list)
+        
+        # 本実行
+        db_name = "test"
+        execute_create_db_sql(sql_list, db_name)
+        
     except ValueError as e:
         # エラーがあった場合
         return jsonify({"error": str(e)}), 400
