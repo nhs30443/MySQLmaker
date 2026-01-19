@@ -82,13 +82,16 @@ def parse_tables(payload):
     tables = payload.get('tables')
     table_sql_list = []
     table_physical_set = set()
+    normalized_json = {
+        "tables": []
+    }
 
     # ===== tables を 0 ～ 要素数-1 まで順番に処理 =====
     for t_idx in range(len(tables)):
-
         # 現在処理中のテーブル情報
         table = tables[t_idx]
 
+        # テーブル名取得
         table_logical  = table.get('table-logical')
         table_physical = normalize_physical_name(table.get('table-physical'))
         
@@ -101,6 +104,7 @@ def parse_tables(payload):
             raise ValueError(f"テーブル{t_idx + 1}: テーブル物理名「{table_physical}」が重複しています")
         table_physical_set.add(table_physical)
         
+        # SQL生成
         table_sql = f"CREATE TABLE {table_physical} (\n"
 
         # テーブルに紐づく columns を取得
@@ -110,13 +114,14 @@ def parse_tables(payload):
         pk_other_columns = []
         fk_constraint_list = []
         seen_column_physical = set()
+        normalized_columns = []
 
         # ===== columns を 0 ～ 要素数-1 まで順番に処理 =====
         for c_idx in range(len(columns)):
-
             # 現在処理中のカラム情報
             column = columns[c_idx]
 
+            # カラム名取得
             column_logical = column.get('column-logical')
             column_physical = normalize_physical_name(column.get('column-physical'))
             
@@ -129,8 +134,14 @@ def parse_tables(payload):
                 raise ValueError(f"テーブル{t_idx + 1}: カラム物理名「{column_physical}」が重複しています")
             seen_column_physical.add(column_physical)
             
-            column_not_null = column.get('column-not-null')
-            column_unique = column.get('column-unique')
+            # 各種値の初期値設定 / 取得
+            column_not_null = True  # PK以外は後で上書き
+            column_unique = False   # PK以外は後で上書き
+            column_default = "" # PK以外は後で上書き
+            column_auto_increment = False
+            column_reference = ""
+            column_on_delete = ""
+            column_on_update = ""
             
             try:
                 column_key = safe_convert(column.get('column-key'))
@@ -142,7 +153,12 @@ def parse_tables(payload):
             except ValueError as e:
                 # シングルクォートが閉じていない場合
                 raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
-            
+                
+            if column_key != "PK":
+                column_not_null = column.get('column-not-null')
+                column_unique = column.get('column-unique')
+                
+            # SQL生成
             column_sql = f"  {column_physical} {column_mold}"
             
             if column_not_null:
@@ -175,6 +191,7 @@ def parse_tables(payload):
                 except ValueError as e:
                     raise ValueError(f"テーブル{t_idx + 1}-カラム{c_idx + 1}: {e}")
                 
+                column_reference = f"{ref_table}({ref_column})"
                 fk_constraint_list.append({
                     "column": column_physical,
                     "ref_table": ref_table,
@@ -182,12 +199,22 @@ def parse_tables(payload):
                     "on_delete": column_on_delete,
                     "on_update": column_on_update
                 })
-                
-            # ===== 通常カラム処理 =====
-            else:
-                pass
             
+            # SQL / json リストに追加
             column_sql_list.append(column_sql)
+            normalized_columns.append({
+                "column-logical": column_logical,
+                "column-physical": column_physical,
+                "column-key": column_key,
+                "column-mold": column_mold,
+                "column-default": column_default,
+                "column-not-null": bool(column_not_null),
+                "column-unique": bool(column_unique),
+                "column-auto-increment": bool(column_auto_increment),
+                "column-reference": column_reference,
+                "column-on-delete": column_on_delete,
+                "column-on-update": column_on_update
+            })
             
         # ===== PRIMARY KEY 制約付与 =====
         pk_columns = []
@@ -208,10 +235,15 @@ def parse_tables(payload):
                 fk_sql += f" ON UPDATE {fk['on_update']}"
             column_sql_list.append(fk_sql)
             
-        # SQL完成
+        # SQL / json 完成
         table_sql += ",\n".join(column_sql_list)
         table_sql += "\n);"
         table_sql_list.append(table_sql)
+        normalized_json["tables"].append({
+            "table-logical": table_logical,
+            "table-physical": table_physical,
+            "columns": normalized_columns
+        })
             
     # FK依存関係からSQL実行順を導出
     try:

@@ -40,20 +40,20 @@ dbBtn.addEventListener('click', () => {
             table.columns.push({
                 "column-logical":
                     colEl.querySelector('[data-role="column-logical"] input')?.value || "",
-                "column-key":
-                    colEl.querySelector('[data-role="column-key"] input')?.value || "",
                 "column-physical":
                     colEl.querySelector('[data-role="column-physical"] input')?.value || "",
+                "column-key":
+                    colEl.querySelector('[data-role="column-key"] input')?.value || "",
                 "column-mold":
                     colEl.querySelector('[data-role="column-mold"] input')?.value || "",
                 "column-default":
                     colEl.querySelector('[data-role="column-default"] input')?.value || "",
                 "column-not-null":
                     colEl.querySelector('[data-role="column-not-null"] input')?.checked || false,
-                "column-auto-increment":
-                    colEl.querySelector('[data-role="column-auto-increment"] input')?.checked || false,
                 "column-unique":
                     colEl.querySelector('[data-role="column-unique"] input')?.checked || false,
+                "column-auto-increment":
+                    colEl.querySelector('[data-role="column-auto-increment"] input')?.checked || false,
                 "column-reference":
                     colEl.querySelector('[data-role="column-reference"] input')?.value || "",
                 "column-on-delete":
