@@ -109,7 +109,6 @@ def parse_tables(payload):
         pk_auto_increment_column = None
         pk_other_columns = []
         fk_constraint_list = []
-        auto_increment_pk_columns = []
         seen_column_physical = set()
 
         # ===== columns を 0 ～ 要素数-1 まで順番に処理 =====
