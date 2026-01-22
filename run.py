@@ -3,14 +3,12 @@ import mysql.connector
 import requests
 import unicodedata
 import re
+import configparser
 
 
 
 ### -------------------- 定数定義 --------------------
-DEEPL_API_KEY = "14c86682-a0a2-4ab6-8c2e-f3cc281b9ba7:fx"
-DB_USER = "root"
-DB_PASSWORD = "root"
-
+CONFIG_FILE = "config.ini"
 TEMP_DB_NAME = "__mysqlmaker_tmp_db__"
 SQL_RESERVED_WORDS = {
     "accessible", "account", "action", "active", "add", "after", "against",
@@ -42,6 +40,9 @@ SQL_RESERVED_WORDS = {
     "values", "varbinary", "varchar", "varying", "when", "where",
     "while", "with", "write", "xor", "year_month"
 }
+DEEPL_API_KEY = lambda: get_config_value("DEEPL_API_KEY")
+DB_USER      = lambda: get_config_value("DB_USER")
+DB_PASSWORD  = lambda: get_config_value("DB_PASSWORD")
 
 
 ### -------------------- Flask --------------------
@@ -53,24 +54,18 @@ app.secret_key = "qawsedrftgyhujikolp"
 ### 関数定義
 ############################################################################
 
+# 設定取得ラッパー
+def get_config_value(key, default=""):
+    config = configparser.ConfigParser()
+    config.read(CONFIG_FILE, encoding="utf-8")
+    return config["DEFAULT"].get(key, default)
+
 # MySQL接続
 def conn_mysql():
     conn = mysql.connector.connect(
         host = "127.0.0.1",
-        user = DB_USER,
-        password = DB_PASSWORD,
-        charset = "utf8"
-    )
-    return conn
-
-
-# データベース接続
-def conn_db(db_name):
-    conn = mysql.connector.connect(
-        host = "127.0.0.1",
-        user = DB_USER,
-        password = DB_PASSWORD,
-        db = db_name,
+        user = DB_USER(),
+        password = DB_PASSWORD(),
         charset = "utf8"
     )
     return conn
@@ -598,6 +593,31 @@ def execute_create_db_sql(sql_list, db_name):
 ############################################################################
 
 ### -------------------- API --------------------
+# 設定更新API
+@app.route('/api/update_config', methods=['POST'])
+def update_config():
+    try:
+        data = request.get_json() or {}
+
+        config = configparser.ConfigParser()
+        config.read(CONFIG_FILE, encoding="utf-8")
+
+        # デフォルトセクションに書き込み
+        if "DEFAULT" not in config:
+            config["DEFAULT"] = {}
+
+        for key, val in data.items():
+            config["DEFAULT"][key] = str(val)
+
+        # 上書き保存
+        with open(CONFIG_FILE, 'w', encoding="utf-8") as f:
+            config.write(f)
+
+        return jsonify({"success": "設定を更新しました"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
 # 翻訳APIプロキシ
 @app.route("/api/translate", methods=["POST"])
 def api_translate():
@@ -610,7 +630,7 @@ def api_translate():
         r = requests.post(
             "https://api-free.deepl.com/v2/translate",
             headers={
-                "Authorization": f"DeepL-Auth-Key {DEEPL_API_KEY}"
+                "Authorization": f"DeepL-Auth-Key {DEEPL_API_KEY()}"
             },
             data={
                 "text": text,
@@ -677,11 +697,15 @@ def create_db():
 def index():
     return redirect(url_for('make_db'))
 
-
 # DB作成ページ
 @app.route('/make_db')
 def make_db():
-    return render_template("make-db.html")
+    return render_template(
+        "make-db.html",
+        DEEPL_API_KEY=DEEPL_API_KEY(),
+        DB_USER=DB_USER(),
+        DB_PASSWORD=DB_PASSWORD()
+    )
 
 
 ############################################################################

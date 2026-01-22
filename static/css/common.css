@@ -41,6 +41,31 @@ header {
   margin-left: auto;
 }
 
+.settings-btn {
+  width: 50px;
+  height: 36px;
+  margin: 1px 50px 0 0;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  background: #d0d0d0;
+  font-weight: bold;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18),
+      rgba(0, 0, 0, 0.07));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: 0.2s ease;
+}
+
+.settings-btn:hover {
+  background-color: #999999;
+}
+
+.settings-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
 .create-db-btn {
   width: 150px;
   height: 36px;
@@ -447,28 +472,28 @@ header {
 
 /* ===== 表示切替 ===== */
 .main-view {
-    display: none;
-    min-width: max-content;
+  display: none;
+  min-width: max-content;
 }
 
 .main-view.active {
-    display: flex;
-    align-items: flex-start;
+  display: flex;
+  align-items: flex-start;
 }
 
 .log-area {
-    padding: 16px;
-    height: 100%;
+  padding: 16px;
+  height: 100%;
 }
 
 #log-output {
-    background: #111;
-    color: #0f0;
-    padding: 12px;
-    height: 100%;
-    overflow-y: auto;
-    font-family: monospace;
-    font-size: 13px;
+  background: #111;
+  color: #0f0;
+  padding: 12px;
+  height: 100%;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 13px;
 }
 
 /* ===== ログ ===== */
@@ -520,4 +545,127 @@ header {
 
 .main.log-mode .log-row.red {
   background-color: #f44336;
+}
+
+/* ===== モーダルウィンドウ ===== */
+.modal {
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  padding: 30px 40px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  position: relative;
+  animation: slideDown 0.3s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close:hover {
+  color: #e74c3c;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 14px;
+  color: #555;
+}
+
+.form-group input {
+  width: 90%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 10px 0;
+  margin-top: 30px;
+  background-color: #3498db;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-save:hover {
+  background-color: #2980b9;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

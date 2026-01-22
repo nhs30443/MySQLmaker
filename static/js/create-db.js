@@ -87,7 +87,7 @@ dbBtn.addEventListener('click', () => {
         return data;
     })
     .then(data => {
-        console.log('Flask応答:', data);
+        showFlashMessage(data.success, "green");
     })
     .catch(err => {
         console.error(err.message);
