@@ -25,8 +25,8 @@
                     データベース作成
                 </button>
                 <div class="toggle-switch">
-                    <div class="toggle-option active">左</div>
-                    <div class="toggle-option">右</div>
+                    <div class="toggle-option active">DB</div>
+                    <div class="toggle-option">ログ</div>
                 </div>
             </div>
         </header>
@@ -34,65 +34,69 @@
         <aside class="sidebar"></aside>
 
         <main class="main">
-            <div id="table1" class="table-card" data-role="table">
-                <div id="table1-logical" class="table-logical" data-role="table-logical">
-                    <input type="text" class="input-table" placeholder="テーブル論理名" />
-                </div>
-                <div id="table1-physical" class="table-physical" data-role="table-physical">
-                    <input type="text" class="input-table" placeholder="table_physical_name" />
-                </div>
+            <div id="db-view" class="main-view active">
+                <div id="table1" class="table-card" data-role="table">
+                    <div id="table1-logical" class="table-logical" data-role="table-logical">
+                        <input type="text" class="input-table" placeholder="テーブル論理名" />
+                    </div>
+                    <div id="table1-physical" class="table-physical" data-role="table-physical">
+                        <input type="text" class="input-table" placeholder="table_physical_name" />
+                    </div>
 
-                <div id="table1-column-wrapper" class="column-wrapper" data-role="column-wrapper">
-                    <div id="table1-column1-row" class="column-row" data-role="column-row">
-                        <div id="table1-column1-logical" class="col-logical" data-role="column-logical">
-                            <input type="text" class="input-col" placeholder="カラム論理名" />
-                        </div>
-                        <div id="table1-column1-key" class="col-key" data-role="column-key">
-                            <input type="text" class="input-col" placeholder="PK/FK" />
-                        </div>
-                        <div id="table1-column1-physical" class="col-physical" data-role="column-physical">
-                            <input type="text" class="input-col" placeholder="column_physical_name" />
-                        </div>
-                        <div id="table1-column1-mold" class="col-mold" data-role="column-mold">
-                            <input type="text" class="input-col" placeholder="型" />
-                        </div>
-                        <div id="table1-column1-default" class="col-default" data-role="column-default">
-                            <input type="text" class="input-col" placeholder="デフォルト値" />
-                        </div>
-                        <div class="col-ng1" style="display: none"></div>
-                        <div id="table1-column1-not-null" class="col-constraint" data-role="column-not-null">
-                            <label>
-                                <input type="checkbox" class="chk-col" /> NOT NULL
-                            </label>
-                        </div>
-                        <div id="table1-column1-auto-increment" class="col-constraint"
-                            data-role="column-auto-increment" style="display: none">
-                            <label class="auto-increment">
-                                <input type="checkbox" class="chk-col" /> AUTO INCREMENT
-                            </label>
-                        </div>
-                        <div class="col-reference" style="display: none" data-role="column-reference">
-                            <input type="text" class="input-col" placeholder="FK参照先" />
-                        </div>
-                        <div class="col-ng2"></div>
-                        <div id="table1-column1-unique" class="col-constraint" data-role="column-unique">
-                            <label>
-                                <input type="checkbox" class="chk-col" /> UNIQUE
-                            </label>
-                        </div>
-                        <div class="col-on-delete" style="display: none" data-role="column-on-delete">
-                            <input type="text" class="input-col" placeholder="ON DELETE" />
-                        </div>
-                        <div class="col-on-update" style="display: none" data-role="column-on-update">
-                            <input type="text" class="input-col" placeholder="ON UPDATE" />
+                    <div id="table1-column-wrapper" class="column-wrapper" data-role="column-wrapper">
+                        <div id="table1-column1-row" class="column-row" data-role="column-row">
+                            <div id="table1-column1-logical" class="col-logical" data-role="column-logical">
+                                <input type="text" class="input-col" placeholder="カラム論理名" />
+                            </div>
+                            <div id="table1-column1-key" class="col-key" data-role="column-key">
+                                <input type="text" class="input-col" placeholder="PK/FK" />
+                            </div>
+                            <div id="table1-column1-physical" class="col-physical" data-role="column-physical">
+                                <input type="text" class="input-col" placeholder="column_physical_name" />
+                            </div>
+                            <div id="table1-column1-mold" class="col-mold" data-role="column-mold">
+                                <input type="text" class="input-col" placeholder="型" />
+                            </div>
+                            <div id="table1-column1-default" class="col-default" data-role="column-default">
+                                <input type="text" class="input-col" placeholder="デフォルト値" />
+                            </div>
+                            <div class="col-ng1" style="display: none"></div>
+                            <div id="table1-column1-not-null" class="col-constraint" data-role="column-not-null">
+                                <label>
+                                    <input type="checkbox" class="chk-col" /> NOT NULL
+                                </label>
+                            </div>
+                            <div id="table1-column1-auto-increment" class="col-constraint"
+                                data-role="column-auto-increment" style="display: none">
+                                <label class="auto-increment">
+                                    <input type="checkbox" class="chk-col" /> AUTO INCREMENT
+                                </label>
+                            </div>
+                            <div class="col-reference" style="display: none" data-role="column-reference">
+                                <input type="text" class="input-col" placeholder="FK参照先" />
+                            </div>
+                            <div class="col-ng2"></div>
+                            <div id="table1-column1-unique" class="col-constraint" data-role="column-unique">
+                                <label>
+                                    <input type="checkbox" class="chk-col" /> UNIQUE
+                                </label>
+                            </div>
+                            <div class="col-on-delete" style="display: none" data-role="column-on-delete">
+                                <input type="text" class="input-col" placeholder="ON DELETE" />
+                            </div>
+                            <div class="col-on-update" style="display: none" data-role="column-on-update">
+                                <input type="text" class="input-col" placeholder="ON UPDATE" />
+                            </div>
                         </div>
                     </div>
+
+                    <div class="add-column" data-role="add-column">＋ カラムを追加</div>
                 </div>
 
-                <div class="add-column" data-role="add-column">＋ カラムを追加</div>
+                <div class="add-table-btn" data-role="add-table">＋ 新しいテーブル</div>
             </div>
 
-            <div class="add-table-btn" data-role="add-table">＋ 新しいテーブル</div>
+            <div id="log-view" class="main-view"></div>
         </main>
 
     </div>
@@ -101,6 +105,7 @@
     <script src="{{ url_for('static', filename='js/add-table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/command.js') }}"></script>
     <script src="{{ url_for('static', filename='js/create-db.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/log.js') }}"></script>
     <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
 
 </body>

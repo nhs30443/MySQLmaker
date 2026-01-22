@@ -143,7 +143,7 @@ document.querySelector('[data-role="add-table"]').addEventListener('click', () =
     columnCount[newTableId] = 1;
 
     // テーブルカード作成
-    const main = document.querySelector('.main');
+    const dbView = document.getElementById('db-view');
     const tableCard = document.createElement('div');
     tableCard.id = newTableId;
     tableCard.className = 'table-card';
@@ -153,7 +153,7 @@ document.querySelector('[data-role="add-table"]').addEventListener('click', () =
     tableCard.innerHTML = createTableHtml(newTableId);
 
     // 「新しいテーブル」ボタンの直前に挿入
-    main.insertBefore(
+    dbView.insertBefore(
         tableCard,
         document.querySelector('[data-role="add-table"]')
     );

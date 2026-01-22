@@ -19,6 +19,9 @@ function showFlashMessage(message, type = "success") {
   // 表示
   flashContainer.appendChild(flash);
 
+  // ログにも積む
+  addLog(message, type);
+
   // 1秒後にフェードアウト、さらに1秒後に削除
   setTimeout(() => {
     flash.style.transition = "opacity 1s ease";

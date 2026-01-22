@@ -79,6 +79,12 @@ function toSnakeCase(str) {
         .toLowerCase();
 }
 
+// ログクリア
+function clearLog() {
+    const logView = document.getElementById("log-view");
+    if (logView) logView.textContent = '';
+}
+
 // -------------------- コマンド定義 --------------------
 const commands = {
     'table-logical': [
@@ -234,6 +240,13 @@ const commands = {
         { text: 'SET NULL', class: 'green' },
         { text: 'RESTRICT', class: 'green' },
         { text: 'NO ACTION', class: 'green' }
+    ],
+    'log-clear': [
+        {
+            text: "ログクリア",
+            class: "red",
+            action: clearLog
+        }
     ]
 };
 
@@ -260,7 +273,7 @@ function renderSidebarButtons(btnConfigs) {
 }
 
 // -------------------- 入力フォーカス --------------------
-document.querySelector('.main').addEventListener('focusin', (e) => {
+document.querySelector('.main-view').addEventListener('focusin', (e) => {
     const target = e.target;
 
     // 入力欄以外は無視
@@ -285,7 +298,7 @@ document.querySelector('.main').addEventListener('focusin', (e) => {
     else sidebar.innerHTML = '';
 });
 
-document.querySelector('.main').addEventListener('focusout', () => {
+document.querySelector('.main-view').addEventListener('focusout', () => {
     Array.from(sidebar.children).forEach(btn => {
         btn.classList.remove('show');
         setTimeout(() => btn.remove(), 200);
@@ -457,8 +470,8 @@ const observer = new MutationObserver(mutations => {
     });
 });
 
-// main配下を監視
-observer.observe(document.querySelector('.main'), {
+// main-view配下を監視
+observer.observe(document.querySelector('.main-view'), {
     childList: true,
     subtree: true
 });

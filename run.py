@@ -7,7 +7,7 @@ import re
 
 
 ### -------------------- 定数定義 --------------------
-DEEPL_API_KEY = "95ebf88f-acaf-4649-a9d6-12361cfce17e:fx"
+DEEPL_API_KEY = "14c86682-a0a2-4ab6-8c2e-f3cc281b9ba7:fx"
 DB_USER = "root"
 DB_PASSWORD = "root"
 
@@ -604,13 +604,15 @@ def api_translate():
     try:
         data = request.get_json(force=True) or {}
         text = data.get("q", "")
-        source_lang = data.get("source", "JP")
+        source_lang = data.get("source", "JA")
         target_lang = data.get("target", "EN")
 
         r = requests.post(
             "https://api-free.deepl.com/v2/translate",
+            headers={
+                "Authorization": f"DeepL-Auth-Key {DEEPL_API_KEY}"
+            },
             data={
-                "auth_key": DEEPL_API_KEY,
                 "text": text,
                 "source_lang": source_lang.upper(),
                 "target_lang": target_lang.upper()
