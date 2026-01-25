@@ -7,8 +7,8 @@
 
     <title>MySQLmaker</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/parts/_flash.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
 </head>
 
 
@@ -126,15 +126,56 @@
                 </form>
             </div>
         </div>
+
+        <div id="create-db-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">データベース作成</h2>
+                    <span id="close-create-db-modal" class="close">&times;</span>
+                </div>
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="save-json-btn" class="btn-secondary">
+                        JSONを保存
+                    </button>
+
+                    <button type="button" id="save-sql-btn" class="btn-secondary">
+                        SQLを保存
+                    </button>
+                </div>
+
+                <hr class="modal-divider">
+
+                <form id="create-db-form">
+                    <div class="form-group">
+                        <label for="db-name-input">データベース名</label>
+                        <input type="text" id="db-name-input" name="db_name" placeholder="database_name"
+                            autocomplete="off">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" id="cancel-create-db" class="btn-cancel">
+                            キャンセル
+                        </button>
+
+                        <button type="submit" id="confirm-create-db" class="btn-primary">
+                            DBを作成
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 
+    <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/parts/_modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/add-table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/command.js') }}"></script>
     <script src="{{ url_for('static', filename='js/create-db.js') }}"></script>
     <script src="{{ url_for('static', filename='js/config.js') }}"></script>
     <script src="{{ url_for('static', filename='js/log.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
 
 </body>
 

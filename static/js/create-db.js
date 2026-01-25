@@ -1,5 +1,9 @@
 const dbBtn = document.getElementById('create-db-btn');
 
+// 仮実行通過後のデータ保持用
+let validatedSqlList = null;
+let validatedJson = null;
+
 dbBtn.addEventListener('click', () => {
     // ボタン無効化
     dbBtn.disabled = true;
@@ -69,7 +73,7 @@ dbBtn.addEventListener('click', () => {
     console.log('送信JSON', JSON.stringify(payload, null, 2));
 
     // -------------------- Flaskへ送信 --------------------
-    fetch('/api/create_db', {
+    fetch('/api/validate_create_db', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -87,7 +91,110 @@ dbBtn.addEventListener('click', () => {
         return data;
     })
     .then(data => {
-        showFlashMessage(data.success, "green");
+        // 仮実行で生成されたデータを保持
+        validatedSqlList = data.sql;
+        validatedJson = data.json;
+
+        const createDbBtn = document.getElementById('create-db-btn');
+        const createDbModal = document.getElementById('create-db-modal');
+        const createDbCloseBtn = document.getElementById('close-create-db-modal');
+
+        // モーダル共通制御セット
+        const createDbModalCtrl =
+            setupModal(createDbBtn, createDbModal, createDbCloseBtn);
+
+        // 表示
+        createDbModalCtrl.openModal();
+
+        const saveJsonBtn = document.getElementById('save-json-btn');
+        const saveSqlBtn = document.getElementById('save-sql-btn');
+        const cancelCreateDbBtn = document.getElementById('cancel-create-db');
+        const createDbForm = document.getElementById('create-db-form');
+        const dbNameInput = document.getElementById('db-name-input');
+
+        // -------------------- JSON保存 --------------------
+        saveJsonBtn.onclick = () => {
+            if (!validatedJson) {
+                showFlashMessage("保存できるJSONがありません", "red");
+                return;
+            }
+
+            const blob = new Blob(
+                [JSON.stringify(validatedJson, null, 2)],
+                { type: 'application/json' }
+            );
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tables.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // -------------------- SQL保存 --------------------
+        saveSqlBtn.onclick = () => {
+            if (!validatedSqlList || validatedSqlList.length === 0) {
+                showFlashMessage("保存できるSQLがありません", "red");
+                return;
+            }
+
+            const sqlText = validatedSqlList.join(';\n\n') + ';';
+
+            const blob = new Blob(
+                [sqlText],
+                { type: 'text/plain' }
+            );
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'create_tables.sql';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // -------------------- キャンセル --------------------
+        cancelCreateDbBtn.onclick = () => {
+            createDbModalCtrl.closeModal();
+        };
+
+        // -------------------- DB作成本実行 --------------------
+        createDbForm.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const dbName = dbNameInput.value.trim();
+            if (dbName === "") {
+                showFlashMessage("データベース名を入力してください", "red");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/execute_create_db', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        db_name: dbName,
+                        sql: validatedSqlList
+                    })
+                });
+
+                const result = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(result.error || 'DB作成に失敗しました');
+                }
+
+                showFlashMessage(result.success, "green");
+                createDbModalCtrl.closeModal();
+
+            } catch (err) {
+                console.error(err);
+                showFlashMessage(err.message, "red");
+            }
+        };
     })
     .catch(err => {
         console.error(err.message);

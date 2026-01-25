@@ -1,38 +1,18 @@
 const configBtn = document.getElementById('settings-btn');
-const modal = document.getElementById('settings-modal');
-const closeBtn = document.getElementById('close-modal');
+const settingsModal = document.getElementById('settings-modal');
+const settingsCloseBtn = document.getElementById('close-modal');
 const form = document.getElementById('config-form');
 
+// モーダル共通制御セット
+const settingsModalCtrl =
+    setupModal(configBtn, settingsModal, settingsCloseBtn);
+
 // 設定ボタンでモーダル表示
-configBtn.addEventListener('click', () => {
-    configBtn.disabled = true;
-    configBtn.style.cursor = 'not-allowed';
-    configBtn.style.pointerEvents = 'none';
-    configBtn.style.backgroundColor = '#999999';
-
-    modal.style.display = 'flex';
-});
-
-// モーダル閉じる処理共通
-function closeModal() {
-    modal.style.display = 'none';
-    configBtn.disabled = false;
-    configBtn.style.cursor = 'pointer';
-    configBtn.style.pointerEvents = 'auto';
-    configBtn.style.backgroundColor = '#ffffff';
-}
-
-// 閉じるボタン
-closeBtn.addEventListener('click', closeModal);
-
-// モーダル外クリック
-window.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-});
+configBtn.addEventListener('click', settingsModalCtrl.openModal);
 
 // 保存ボタン
 form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // デフォルト送信防止
+    e.preventDefault();
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
@@ -48,7 +28,7 @@ form.addEventListener('submit', async (e) => {
 
         if (res.ok) {
             showFlashMessage(result.success, "green");
-            closeModal();
+            settingsModalCtrl.closeModal();
         } else {
             showFlashMessage(result.error, "red");
         }

@@ -588,6 +588,27 @@ def execute_create_db_sql(sql_list, db_name):
     return True
 
 
+# DB存在チェック
+def is_database_exists(db_name):
+    con = conn_mysql()
+    cur = con.cursor()
+
+    try:
+        # INFORMATION_SCHEMA から存在確認
+        cur.execute(
+            "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = %s",
+            (db_name,)
+        )
+        return cur.fetchone() is not None
+
+    except mysql.connector.Error as e:
+        raise ValueError(f"DB存在チェック中にエラーが発生しました: {e.msg}")
+
+    finally:
+        cur.close()
+        con.close()
+
+
 ############################################################################
 ### ルート定義
 ############################################################################
@@ -668,27 +689,60 @@ def api_translate():
     except Exception:
         return jsonify({"error": "予期せぬエラーが発生しました"}), 500
     
-    
-# DB作成API
-@app.route('/api/create_db', methods=['POST'])
-def create_db():
+
+# DB仮作成検証API
+@app.route('/api/validate_create_db', methods=['POST'])
+def validate_create_db():
     data = request.get_json()
     
     try:
         sql_list, tables_json = parse_tables(data)
-
-        # 仮実行で検証
         validate_sql(sql_list)
-        
-        # 本実行
-        db_name = "test"
-        execute_create_db_sql(sql_list, db_name)
         
     except ValueError as e:
         # エラーがあった場合
         return jsonify({"error": str(e)}), 400
 
-    return jsonify({"success": "データベースが作成されました"})
+    return jsonify({
+        "success": "DB作成SQLの検証が正常に完了しました",
+        "sql": sql_list,
+        "json": tables_json
+    })
+    
+    
+# DB作成API
+@app.route('/api/execute_create_db', methods=['POST'])
+def execute_create_db():
+    data = request.get_json()
+
+    if data is None:
+        return jsonify({"error": "JSONデータが送信されていません"}), 400
+
+    try:
+        # データ取得
+        db_name = data.get('db_name')
+        sql_list = data.get('sql')
+
+        if not db_name:
+            raise ValueError("データベース名が指定されていません")
+
+        if not sql_list or not isinstance(sql_list, list):
+            raise ValueError("SQLデータが不正です")
+        
+        # 既存DBチェック
+        if is_database_exists(db_name):
+            return jsonify({"error": f"データベース「{db_name}」は既に存在しています"}), 409
+
+        execute_create_db_sql(sql_list, db_name)
+
+    except ValueError as e:
+        # エラーがあった場合
+        return jsonify({"error": str(e)}), 400
+
+    except Exception as e:
+        return jsonify({"error": f"DB作成中に予期せぬエラーが発生しました: {str(e)}"}), 500
+
+    return jsonify({"success": f"データベース「{db_name}」を作成しました"})
 
 
 ### -------------------- ページ --------------------
@@ -696,6 +750,7 @@ def create_db():
 @app.route('/')
 def index():
     return redirect(url_for('make_db'))
+
 
 # DB作成ページ
 @app.route('/make_db')
