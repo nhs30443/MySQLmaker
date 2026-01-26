@@ -57,8 +57,14 @@ app.secret_key = "qawsedrftgyhujikolp"
 ### 関数定義
 ############################################################################
 
+# メイン処理
+def main():
+    start_flask_background()
+    start_webview()
+    
+
 # Flask起動
-def run_flask():
+def start_flask():
     app.run(
         host="127.0.0.1",
         port=5000,
@@ -66,6 +72,26 @@ def run_flask():
         use_reloader=False
     )
     
+
+# Flaskバックグラウンド起動
+def start_flask_background():
+    flask_thread = threading.Thread(
+        target=start_flask,
+        daemon=True
+    )
+    flask_thread.start()
+    time.sleep(1)
+    
+    
+# pywebview起動
+def start_webview():
+    webview.create_window(
+        title="MySQLmaker",
+        url="http://127.0.0.1:5000",
+        maximized=True
+    )
+    webview.start()
+
 
 # 設定取得ラッパー
 def get_config_value(key, default=""):
@@ -781,17 +807,4 @@ def make_db():
 ### 実行制御
 ############################################################################
 if __name__ == "__main__":
-    # Flaskをバックグラウンド起動
-    flask_thread = threading.Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-
-    # 起動待ち
-    time.sleep(1)
-
-    # pywebview起動
-    webview.create_window(
-        title="MySQLmaker",
-        url="http://127.0.0.1:5000",
-        maximized=True
-    )
-    webview.start()
+    main()
