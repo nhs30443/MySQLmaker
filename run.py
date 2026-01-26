@@ -7,7 +7,7 @@ import configparser
 import threading
 import time
 import webview
-
+import socket
 
 
 ### -------------------- 定数定義 --------------------
@@ -59,8 +59,11 @@ app.secret_key = "qawsedrftgyhujikolp"
 
 # メイン処理
 def main():
-    start_flask_background()
-    start_webview()
+    try:
+        start_flask_background()
+        start_webview()
+    except Exception as e:
+        print(e)
     
 
 # Flask起動
@@ -72,15 +75,23 @@ def start_flask():
         use_reloader=False
     )
     
+    
+# Flask起動待ち
+def wait_flask(host="127.0.0.1", port=5000, timeout=5):
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            with socket.create_connection((host, port), timeout=0.2):
+                return
+        except OSError:
+            time.sleep(0.05)
+    raise RuntimeError("Flask起動失敗")
+    
 
 # Flaskバックグラウンド起動
 def start_flask_background():
-    flask_thread = threading.Thread(
-        target=start_flask,
-        daemon=True
-    )
-    flask_thread.start()
-    time.sleep(1)
+    threading.Thread(target=start_flask, daemon=True).start()
+    wait_flask()
     
     
 # pywebview起動
