@@ -792,8 +792,6 @@ if __name__ == "__main__":
     webview.create_window(
         title="MySQLmaker",
         url="http://127.0.0.1:5000",
-        width=1200,
-        height=800,
-        resizable=True
+        maximized=True
     )
     webview.start()
