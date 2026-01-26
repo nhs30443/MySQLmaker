@@ -4,6 +4,9 @@ import requests
 import unicodedata
 import re
 import configparser
+import threading
+import time
+import webview
 
 
 
@@ -54,11 +57,22 @@ app.secret_key = "qawsedrftgyhujikolp"
 ### 関数定義
 ############################################################################
 
+# Flask起動
+def run_flask():
+    app.run(
+        host="127.0.0.1",
+        port=5000,
+        debug=False,
+        use_reloader=False
+    )
+    
+
 # 設定取得ラッパー
 def get_config_value(key, default=""):
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE, encoding="utf-8")
     return config["DEFAULT"].get(key, default)
+
 
 # MySQL接続
 def conn_mysql():
@@ -767,4 +781,19 @@ def make_db():
 ### 実行制御
 ############################################################################
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Flaskをバックグラウンド起動
+    flask_thread = threading.Thread(target=run_flask, daemon=True)
+    flask_thread.start()
+
+    # 起動待ち
+    time.sleep(1)
+
+    # pywebview起動
+    webview.create_window(
+        title="MySQLmaker",
+        url="http://127.0.0.1:5000",
+        width=1200,
+        height=800,
+        resizable=True
+    )
+    webview.start()
