@@ -1,16 +1,18 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
-import mysql.connector
-import requests
-import unicodedata
-import re
 import configparser
+import re
+import socket
 import threading
 import time
+import unicodedata
+
+import mysql.connector
+import requests
 import webview
-import socket
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 
-### -------------------- 定数定義 --------------------
+
+### -------------------- 定数 --------------------
 CONFIG_FILE = "config.ini"
 TEMP_DB_NAME = "__mysqlmaker_tmp_db__"
 SQL_RESERVED_WORDS = {
