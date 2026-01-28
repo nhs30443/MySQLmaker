@@ -5,3 +5,13 @@ MySQLユーザー権限デバッグ
 トークン付与で不正アクセス対策
 PKのNULL/UQグレーアウト
 許容文字数オーバー弾く
+
+
+
+C:\Users\treas\venvs\flaskexe\Scripts\activate
+cd OneDrive\HAL\MySQLmaker
+if exist dist rmdir /s /q dist
+if exist build rmdir /s /q build
+if exist run.spec del /f /q run.spec
+if exist MySQLmaker.exe del /f /q MySQLmaker.exe
+pyinstaller --onefile --windowed --icon=static/img/icon.ico --add-data "templates;templates" --add-data "static;static" MySQLmaker.py
