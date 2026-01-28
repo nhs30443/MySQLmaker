@@ -17,6 +17,17 @@ dbBtn.addEventListener('click', () => {
     const tables = document.querySelectorAll('[data-role="table"]');
     console.log('検出テーブル数:', tables.length);
 
+    // テーブル0件なら弾く
+    if (tables.length === 0) {
+        showFlashMessage("テーブルが存在しません", "red");
+        // ボタン復活
+        dbBtn.disabled = false;
+        dbBtn.style.cursor = '';
+        dbBtn.style.pointerEvents = '';
+        dbBtn.style.backgroundColor = '';
+        return;
+    }
+
     tables.forEach((tableEl, tIndex) => {
 
         const logicalInput =

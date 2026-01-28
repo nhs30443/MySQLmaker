@@ -685,7 +685,7 @@ def update_config():
         with open(CONFIG_FILE, 'w', encoding="utf-8") as f:
             config.write(f)
 
-        return jsonify({"success": "設定を更新しました"})
+        return jsonify({"success": "設定を保存しました"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
