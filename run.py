@@ -54,17 +54,8 @@ app.secret_key = "qawsedrftgyhujikolp"
 
 
 ############################################################################
-### 関数定義
+### 関数
 ############################################################################
-
-# メイン処理
-def main():
-    try:
-        start_flask_background()
-        start_webview()
-    except Exception as e:
-        print(e)
-    
 
 # Flask起動
 def start_flask():
@@ -96,10 +87,12 @@ def start_flask_background():
     
 # pywebview起動
 def start_webview():
+    api = FileSaveAPI()
     webview.create_window(
         title="MySQLmaker",
         url="http://127.0.0.1:5000",
-        maximized=True
+        maximized=True,
+        js_api=api
     )
     webview.start()
 
@@ -661,7 +654,28 @@ def is_database_exists(db_name):
 
 
 ############################################################################
-### ルート定義
+### クラス
+############################################################################
+
+# ファイル保存APIクラス
+class FileSaveAPI:
+    def save_file(self, default_name, content):
+        try:
+            path = webview.windows[0].create_file_dialog(
+                int(webview.SAVE_DIALOG),
+                save_filename=default_name
+            )
+            if path:
+                with open(path[0], 'w', encoding='utf-8') as f:
+                    f.write(content)
+                return "success"
+            return "cancel"
+        except Exception as e:
+            return f"保存に失敗しました: {e}"
+
+
+############################################################################
+### ルート
 ############################################################################
 
 ### -------------------- API --------------------
@@ -813,6 +827,17 @@ def make_db():
         DB_PASSWORD=DB_PASSWORD()
     )
 
+
+############################################################################
+### メイン処理
+############################################################################
+def main():
+    try:
+        start_flask_background()
+        start_webview()
+    except Exception as e:
+        print(e)
+        
 
 ############################################################################
 ### 実行制御
