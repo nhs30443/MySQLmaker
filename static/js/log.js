@@ -1,11 +1,22 @@
-// -------------------- ログ出力 --------------------
+// -------------------- ログ出力（行ごとにコピーボタン） --------------------
 function addLog(message, type = "info") {
     const logView = document.getElementById("log-view");
     if (!logView) return;
 
     const row = document.createElement("div");
     row.className = `log-row ${type}`;
-    row.textContent = message;
+
+    // テキストとコピーボタンを内包する
+    const textSpan = document.createElement("span");
+    textSpan.textContent = message;
+    row.appendChild(textSpan);
+
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "log-copy-btn";
+    copyBtn.onclick = () => {
+        navigator.clipboard.writeText(message)
+    };
+    row.appendChild(copyBtn);
 
     // 初期状態で透明にして追加
     row.style.opacity = 0;

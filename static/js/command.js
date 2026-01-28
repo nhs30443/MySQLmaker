@@ -116,7 +116,7 @@ const commands = {
 
                 const converted = await logicalToPhysical(jp);
                 physicalInput.value = converted;
-                showFlashMessage("翻訳命名が完了しました", "green");
+                showFlashMessage(`翻訳命名が完了しました: 「${jp}」 → 「${converted}」`, "green");
             }
         }
     ],
@@ -149,7 +149,7 @@ const commands = {
 
                 const converted = await logicalToPhysical(jp);
                 physicalInput.value = converted;
-                showFlashMessage("翻訳命名が完了しました", "green");
+                showFlashMessage(`翻訳命名が完了しました: 「${jp}」 → 「${converted}」`, "green");
             }
         }
     ],
