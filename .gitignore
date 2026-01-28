@@ -1,0 +1,9 @@
+# PyInstaller ビルド出力
+/dist/
+/build/
+/*.spec
+
+# Python 仮想環境
+/venv/
+/.env/
+/__pycache__/
