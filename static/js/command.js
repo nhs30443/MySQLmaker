@@ -167,14 +167,18 @@ const commands = {
         { text: 'CHAR(4)', class: 'red' },
         { text: 'CHAR(2)', class: 'red' },
         { text: 'CHAR(n)', class: 'red' },
-        { text: 'TEXT', class: 'red' },
+        { text: 'TEXT', class: 'green' },
         { text: 'DATETIME', class: 'green' },
         { text: 'DATE', class: 'green' },
         { text: 'TIME', class: 'green' },
         { text: 'TIMESTAMP', class: 'green' },
         { text: 'TIMESTAMP(2)', class: 'green' },
         { text: 'TIMESTAMP(n)', class: 'green' },
+        { text: 'YEAR', class: 'green' },
         { text: 'BLOB', class: 'green' },
+        { text: 'JSON', class: 'green' },
+        { text: 'BINARY(16)', class: 'green' },
+        { text: 'BINARY(n)', class: 'green' },
         { text: 'TINYINT', class: 'yellow' },
         { text: 'SMALLINT', class: 'yellow' },
         { text: 'MEDIUMINT', class: 'yellow' },
@@ -182,17 +186,23 @@ const commands = {
         { text: 'BIGINT', class: 'yellow' },
         { text: 'FLOAT', class: 'yellow' },
         { text: 'DOUBLE', class: 'yellow' },
+        { text: 'DECIMAL(10)', class: 'yellow' },
+        { text: 'DECIMAL(p)', class: 'yellow' },
         { text: 'DECIMAL(10,2)', class: 'yellow' },
         { text: 'DECIMAL(p,s)', class: 'yellow' },
         { text: 'BOOLEAN', class: 'yellow' },
-        { text: 'TINYTEXT', class: 'red' },
-        { text: 'MEDIUMTEXT', class: 'red' },
-        { text: 'LONGTEXT', class: 'red' },
-        { text: 'JSON', class: 'green' },
+        { text: 'TINYTEXT', class: 'green' },
+        { text: 'MEDIUMTEXT', class: 'green' },
+        { text: 'LONGTEXT', class: 'green' },
         { text: 'TINYBLOB', class: 'green' },
         { text: 'MEDIUMBLOB', class: 'green' },
         { text: 'LONGBLOB', class: 'green' },
-        { text: 'YEAR', class: 'green' },
+        { text: 'BIT(1)', class: 'yellow' },
+        { text: 'BIT(8)', class: 'yellow' },
+        { text: 'BIT(n)', class: 'yellow' },
+        { text: 'SERIAL', class: 'yellow' },
+        { text: 'ENUM(\'A\',\'B\',\'C\')', class: 'red' },
+        { text: 'SET(\'X\',\'Y\',\'Z\')', class: 'red' },
         { text: 'GEOMETRY', class: 'green' },
         { text: 'POINT', class: 'green' },
         { text: 'LINESTRING', class: 'green' },
@@ -211,20 +221,20 @@ const commands = {
         { text: 'FALSE', class: 'yellow' },
         { text: '\'\'', class: 'red' },
         { text: '\'default_text\'', class: 'red' },
-        { text: 'CURRENT_DATE', class: 'green longbtn' },
-        { text: 'CURRENT_TIME', class: 'green longbtn' },
+        { text: '(\'\')', class: 'green' },
+        { text: '(\'example\')', class: 'green' },
+        { text: '(CURRENT_DATE)', class: 'green longerbtn' },
+        { text: '(CURRENT_TIME)', class: 'green longerbtn' },
         { text: 'CURRENT_TIMESTAMP', class: 'green longerbtn' },
         { text: 'CURRENT_TIMESTAMP(2)', class: 'green longestbtn' },
         { text: 'CURRENT_TIMESTAMP(n)', class: 'green longestbtn' },
         { text: 'NOW()', class: 'green' },
-        { text: 'CURRENT_YEAR', class: 'green longbtn' },
         { text: '\'1970-01-01\'', class: 'green' },
         { text: '\'00:00:00\'', class: 'green' },
-        { text: '\'{}\'', class: 'green' },
-        { text: '\'[]\'', class: 'green' },
-        { text: 'UUID()', class: 'green' },
-        { text: '\'0.0\'', class: 'yellow' },
-        { text: '\'1.0\'', class: 'yellow' }
+        { text: '(JSON_OBJECT())', class: 'green longerbtn' },
+        { text: '(JSON_ARRAY())', class: 'green longerbtn' },
+        { text: '(UUID())', class: 'green' },
+        { text: '(UUID_TO_BIN(UUID()))', class: 'green longerbtn' }
     ],
     'col-reference': [
         { text: 'table(column)', class: 'green' }
@@ -428,7 +438,17 @@ function setupMoldInput(row) {
             if (/^VARCHAR\(N\)$/.test(t)) return /^VARCHAR\(\d+\)$/.test(v);
             if (/^CHAR\(N\)$/.test(t)) return /^CHAR\(\d+\)$/.test(v);
             if (/^DECIMAL\(P,S\)$/.test(t)) return /^DECIMAL\(\d+,\d+\)$/.test(v);
+            if (/^DECIMAL\(P\)$/.test(t)) return /^DECIMAL\(\d+\)$/.test(v);
             if (/^TIMESTAMP\(N\)$/.test(t)) return /^TIMESTAMP\(\d+\)$/.test(v);
+            if (/^BINARY\(N\)$/.test(t)) return /^BINARY\(\d+\)$/.test(v);
+            if (/^BIT\(N\)$/.test(t)) return /^BIT\(\d+\)$/.test(v);
+            if (/^ENUM\(.*\)$/.test(t)) {
+                return /^ENUM\('([^']*)'(,'[^']*')*\)$/.test(v);
+            }
+            if (/^SET\(.*\)$/.test(t)) {
+                return /^SET\('([^']*)'(,'[^']*')*\)$/.test(v);
+            }
+
             return t === v;
         });
 
