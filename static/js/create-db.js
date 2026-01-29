@@ -167,7 +167,7 @@ function mainHandler() {
                 if (!dbName) {
                     dbName = 'MySQLmaker_' + getTimestampName();
                 }
-                handleSaveFile(dbName + '.sql', validatedSqlList.join(';\n\n') + ';');
+                handleSaveFile(dbName + '.sql', validatedSqlList.join(';\n\n'));
             };
 
             // -------------------- キャンセル --------------------
