@@ -21,6 +21,9 @@
     <div class="app">
         <header>
             <div class="logo">MySQLmaker</div>
+            <button id="file-btn" class="file-btn">
+                ファイル
+            </button>
 
             <div class="header-buttons">
                 <button id="settings-btn" class="settings-btn">
@@ -168,16 +171,41 @@
             </div>
         </div>
 
+        <div id="file-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">ファイル</h2>
+                    <span id="close-file-modal" class="close">&times;</span>
+                </div>
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="file-load-json-btn" class="btn-secondary">
+                        JSONを読み込む
+                    </button>
+                </div>
+
+                <hr class="modal-divider">
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="file-save-json-btn" class="btn-secondary">
+                        JSONを保存
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
     <script src="{{ url_for('static', filename='js/parts/_modal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/build-json.js') }}"></script>
     <script src="{{ url_for('static', filename='js/toggle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/add-table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/command.js') }}"></script>
     <script src="{{ url_for('static', filename='js/create-db.js') }}"></script>
     <script src="{{ url_for('static', filename='js/config.js') }}"></script>
     <script src="{{ url_for('static', filename='js/log.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/file.js') }}"></script>
 
 </body>
 
