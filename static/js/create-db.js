@@ -95,7 +95,6 @@ function mainHandler() {
 
                     showFlashMessage(result.success, "green");
                     createDbModalCtrl.closeModal();
-
                 } catch (err) {
                     console.error(err);
                     showFlashMessage(err.message, "red");

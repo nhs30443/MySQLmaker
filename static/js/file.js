@@ -41,8 +41,8 @@ loadJsonBtn.addEventListener('click', async () => {
 
         // 検証
         validateJsonStructure(parsed);
-
-        // restoreFromJson(parsed); // UI反映
+        // 反映
+        restoreFromJson(parsed);
 
         showFlashMessage('JSONを読み込みました', 'green');
     } catch (err) {
@@ -56,7 +56,7 @@ saveJsonBtn.addEventListener('click', () => {
     try {
         // JSON化
         const payload = buildRawJson();
-        handleSaveFile('MySQLmaker_tmp_' + getTimestampName() + '.json', JSON.stringify(normalizeJsonOrder(payload), null, 2)); 
+        handleSaveFile('MySQLmaker_tmp_' + getTimestampName() + '.json', JSON.stringify(normalizeJsonOrder(payload), null, 2));
     } catch (err) {
         console.error(err);
         showFlashMessage(err.message || String(err), "red");
