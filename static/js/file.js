@@ -11,10 +11,44 @@ const fileModalCtrl = setupModal(fileBtn, fileModal, closeBtn);
 fileBtn.addEventListener('click', fileModalCtrl.openModal);
 
 // -------------------- JSON読み込み --------------------
-loadJsonBtn.addEventListener('click', () => {
+loadJsonBtn.addEventListener('click', async () => {
+    try {
+        const [file] = await new Promise(resolve => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = () => resolve(input.files);
+            input.click();
+        });
 
+        if (!file) {
+            return;
+        }
 
-    fileModalCtrl.closeModal();
+        if (!file.name.endsWith('.json')) {
+            showFlashMessage('JSONファイルを選択してください', 'red');
+            return;
+        }
+
+        const text = await file.text();
+        let parsed;
+        try {
+            parsed = JSON.parse(text);
+        } catch {
+            showFlashMessage('JSON形式が不正です', 'red');
+            return;
+        }
+
+        // 検証
+        validateJsonStructure(parsed);
+
+        // restoreFromJson(parsed); // UI反映
+
+        showFlashMessage('JSONを読み込みました', 'green');
+    } catch (err) {
+        console.error(err);
+        showFlashMessage(err.message || String(err), "red");
+    }
 });
 
 // -------------------- JSON保存 --------------------
