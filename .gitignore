@@ -1,5 +1,4 @@
 # PyInstaller ビルド出力
-/dist/
 /build/
 /*.spec
 
