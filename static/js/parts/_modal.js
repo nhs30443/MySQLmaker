@@ -1,17 +1,25 @@
 /**
  * モーダル共通制御
- * @param {HTMLElement} openBtn  モーダルを開いたボタン
- * @param {HTMLElement} modalEl  モーダル要素
- * @param {HTMLElement} closeBtn 閉じるボタン
+ * @param {HTMLElement} openBtn   モーダルを開いたボタン
+ * @param {HTMLElement} modalEl   モーダル要素
+ * @param {HTMLElement} closeBtn  閉じるボタン
+ * @param {Object} options        表示制御オプション
+ * @param {string} options.enabledColor  ボタン有効時の背景色
+ * @param {string} options.disabledColor ボタン無効時の背景色
  */
-function setupModal(openBtn, modalEl, closeBtn) {
+function setupModal(openBtn, modalEl, closeBtn, options = {}) {
+
+    const {
+        enabledColor  = '#ffffff',
+        disabledColor = '#999999'
+    } = options;
 
     // モーダル表示
     function openModal() {
         openBtn.disabled = true;
         openBtn.style.cursor = 'not-allowed';
         openBtn.style.pointerEvents = 'none';
-        openBtn.style.backgroundColor = '#999999';
+        openBtn.style.backgroundColor = disabledColor;
 
         modalEl.style.display = 'flex';
     }
@@ -23,7 +31,7 @@ function setupModal(openBtn, modalEl, closeBtn) {
         openBtn.disabled = false;
         openBtn.style.cursor = 'pointer';
         openBtn.style.pointerEvents = 'auto';
-        openBtn.style.backgroundColor = '#ffffff';
+        openBtn.style.backgroundColor = enabledColor;
     }
 
     // 閉じるボタン

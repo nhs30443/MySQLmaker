@@ -7,7 +7,7 @@ function buildRawJson() {
         throw new Error("テーブルが存在しません");
     }
 
-    tables.forEach((tableEl) => {
+    tables.forEach((tableEl, index) => {
         const logicalInput  = tableEl.querySelector('[data-role="table-logical"] input');
         const physicalInput = tableEl.querySelector('[data-role="table-physical"] input');
 
@@ -18,12 +18,12 @@ function buildRawJson() {
         };
 
         const wrapper = tableEl.querySelector('[data-role="column-wrapper"]');
-        if (!wrapper) {
-            payload.tables.push(table);
-            return;
+        const columnRows = wrapper.querySelectorAll('[data-role="column-row"]');
+        if (columnRows.length === 0) {
+            throw new Error(`テーブル${index + 1}: カラムが存在しません`);
         }
 
-        wrapper.querySelectorAll('[data-role="column-row"]').forEach((colEl) => {
+        columnRows.forEach((colEl) => {
             table.columns.push({
                 "column-logical": colEl.querySelector('[data-role="column-logical"] input')?.value || "",
                 "column-physical": colEl.querySelector('[data-role="column-physical"] input')?.value || "",
