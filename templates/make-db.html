@@ -107,6 +107,35 @@
             <div id="log-view" class="main-view"></div>
         </main>
 
+        <div id="file-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">ファイル</h2>
+                    <span id="close-file-modal" class="close">&times;</span>
+                </div>
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="file-new-btn" class="btn-secondary">
+                        新規作成
+                    </button>
+                </div>
+
+                <hr class="modal-divider">
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="file-load-json-btn" class="btn-secondary">
+                        JSONを読み込む
+                    </button>
+                </div>
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="file-save-json-btn" class="btn-secondary">
+                        JSONを保存
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div id="settings-modal" class="modal" style="display:none;">
             <div class="modal-content">
                 <div class="modal-header">
@@ -141,7 +170,7 @@
 
                 <div class="modal-sub-actions">
                     <button type="button" id="save-json-btn" class="btn-secondary">
-                        JSONを保存
+                        正規化JSONを保存
                     </button>
 
                     <button type="button" id="save-sql-btn" class="btn-secondary">
@@ -168,29 +197,6 @@
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <div id="file-modal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">ファイル</h2>
-                    <span id="close-file-modal" class="close">&times;</span>
-                </div>
-
-                <div class="modal-sub-actions">
-                    <button type="button" id="file-load-json-btn" class="btn-secondary">
-                        JSONを読み込む
-                    </button>
-                </div>
-
-                <hr class="modal-divider">
-
-                <div class="modal-sub-actions">
-                    <button type="button" id="file-save-json-btn" class="btn-secondary">
-                        JSONを保存
-                    </button>
-                </div>
             </div>
         </div>
 

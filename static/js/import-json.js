@@ -67,7 +67,7 @@ function restoreFromJson(json) {
     tableCount = 0;
     columnCount = {};
 
-    json.tables.forEach((table, tIndex) => {
+    json.tables.forEach((table) => {
         tableCount++;
         const tableId = `table${tableCount}`;
         columnCount[tableId] = 0;

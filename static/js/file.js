@@ -2,6 +2,7 @@ const fileBtn   = document.getElementById('file-btn');
 const fileModal = document.getElementById('file-modal');
 const closeBtn  = document.getElementById('close-file-modal');
 
+const newBtn = document.getElementById('file-new-btn');
 const loadJsonBtn = document.getElementById('file-load-json-btn');
 const saveJsonBtn = document.getElementById('file-save-json-btn');
 
@@ -9,6 +10,35 @@ const dbNameInput = document.getElementById('db-name-input');
 
 const fileModalCtrl = setupModal(fileBtn, fileModal, closeBtn);
 fileBtn.addEventListener('click', fileModalCtrl.openModal);
+
+// -------------------- 新規作成 --------------------
+newBtn.addEventListener('click', () => {
+    const emptyJson = {
+        tables: [
+            {
+                "table-logical": "",
+                "table-physical": "",
+                "columns": [
+                    {
+                        "column-logical": "",
+                        "column-physical": "",
+                        "column-key": "",
+                        "column-mold": "",
+                        "column-default": "",
+                        "column-not-null": false,
+                        "column-unique": false,
+                        "column-auto-increment": false,
+                        "column-reference": "",
+                        "column-on-delete": "",
+                        "column-on-update": ""
+                    }
+                ]
+            }
+        ]
+    };
+    restoreFromJson(emptyJson);
+    fileModalCtrl.closeModal();
+});
 
 // -------------------- JSON読み込み --------------------
 loadJsonBtn.addEventListener('click', async () => {
