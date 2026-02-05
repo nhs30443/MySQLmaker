@@ -4,10 +4,7 @@ const settingsCloseBtn = document.getElementById('close-modal');
 const form = document.getElementById('config-form');
 
 // モーダル共通制御セット
-const settingsModalCtrl = setupModal(configBtn, settingsModal, settingsCloseBtn,{
-    enabledColor: '#d0d0d0',
-    disabledColor: '#777777'
-});
+const settingsModalCtrl = setupModal(configBtn, settingsModal, settingsCloseBtn);
 
 // 設定ボタンでモーダル表示
 configBtn.addEventListener('click', settingsModalCtrl.openModal);

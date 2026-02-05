@@ -59,11 +59,21 @@ header {
 }
 
 .file-btn:hover {
-  background-color: #fff299;
+  background-color: #ffcc99;
 }
 
 .file-btn:active {
   transform: translateY(1px) scale(0.985);
+}
+
+.file-btn.disabled {
+  background-color: #999999;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.file-btn.disabled:hover {
+  background-color: #999999;
 }
 
 .settings-btn {
@@ -91,6 +101,16 @@ header {
   transform: translateY(1px) scale(0.985);
 }
 
+.settings-btn.disabled {
+  background-color: #777777;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.settings-btn.disabled:hover {
+  background-color: #777777;
+}
+
 .create-db-btn {
   width: 150px;
   height: 36px;
@@ -110,6 +130,16 @@ header {
 
 .create-db-btn:hover {
   background-color: #fff299;
+}
+
+.create-db-btn.disabled {
+  background-color: #999999;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.create-db-btn.disabled:hover {
+  background-color: #999999;
 }
 
 .create-db-btn:active {
