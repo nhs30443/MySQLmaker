@@ -14,8 +14,21 @@ function mainHandler() {
         dbBtn.style.backgroundColor = '#d0d0d0';
 
         // -------------------- JSONデータ生成 --------------------
-        payload = buildRawJson();
-        console.log('JSON', JSON.stringify(payload, null, 2));
+        try {
+            payload = buildRawJson();
+            console.log('JSON', JSON.stringify(payload, null, 2));
+        } catch (err) {
+            console.error(err);
+            showFlashMessage(err.message || String(err), "red");
+
+            // ボタン復活
+            dbBtn.disabled = false;
+            dbBtn.style.cursor = '';
+            dbBtn.style.pointerEvents = '';
+            dbBtn.style.backgroundColor = '';
+
+            return;
+        }
 
         // -------------------- Flaskへ送信 --------------------
         fetch('/api/validate_create_db', {
