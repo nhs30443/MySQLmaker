@@ -7,11 +7,13 @@ let validatedJson = null;
 // -------------------- メイン処理 --------------------
 function mainHandler() {
     dbBtn.addEventListener('click', () => {
+        // 二重クリック防止
+        if (dbBtn.classList.contains('disabled')) {
+            return
+        };
+
         // ボタン無効化
-        dbBtn.disabled = true;
-        dbBtn.style.cursor = 'not-allowed';
-        dbBtn.style.pointerEvents = 'none';
-        dbBtn.style.backgroundColor = '#d0d0d0';
+        dbBtn.classList.add('disabled');
 
         // -------------------- JSONデータ生成 --------------------
         try {
@@ -22,11 +24,7 @@ function mainHandler() {
             showFlashMessage(err.message || String(err), "red");
 
             // ボタン復活
-            dbBtn.disabled = false;
-            dbBtn.style.cursor = '';
-            dbBtn.style.pointerEvents = '';
-            dbBtn.style.backgroundColor = '';
-
+            dbBtn.classList.remove('disabled');
             return;
         }
 
@@ -118,13 +116,6 @@ function mainHandler() {
             console.error(err.message);
             showFlashMessage(err.message, "red");
         })
-        .finally(() => {
-            // ボタン復活
-            dbBtn.disabled = false;
-            dbBtn.style.cursor = '';
-            dbBtn.style.pointerEvents = '';
-            dbBtn.style.backgroundColor = '';
-        });
     });
 }
 
