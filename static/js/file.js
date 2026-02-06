@@ -37,6 +37,7 @@ newBtn.addEventListener('click', () => {
         ]
     };
     restoreFromJson(emptyJson);
+    showFlashMessage('テーブルをリセットしました', 'green');
     fileModalCtrl.closeModal();
 });
 
@@ -74,7 +75,8 @@ loadJsonBtn.addEventListener('click', async () => {
         // 反映
         restoreFromJson(parsed);
 
-        showFlashMessage('JSONを読み込みました', 'green');
+        showFlashMessage(`${file.name}を読み込みました`, 'green');
+        fileModalCtrl.closeModal();
     } catch (err) {
         console.error(err);
         showFlashMessage(err.message || String(err), "red");
@@ -87,6 +89,7 @@ saveJsonBtn.addEventListener('click', () => {
         // JSON化
         const payload = buildRawJson();
         handleSaveFile('MySQLmaker_tmp_' + getTimestampName() + '.json', JSON.stringify(normalizeJsonOrder(payload), null, 2));
+        fileModalCtrl.closeModal();
     } catch (err) {
         console.error(err);
         showFlashMessage(err.message || String(err), "red");
