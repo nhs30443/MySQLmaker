@@ -115,6 +115,8 @@ function mainHandler() {
         .catch(err => {
             console.error(err.message);
             showFlashMessage(err.message, "red");
+            // ボタン復活
+            dbBtn.classList.remove('disabled');
         })
     });
 }
