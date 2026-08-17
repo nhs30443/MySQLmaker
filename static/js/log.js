@@ -1,6 +1,9 @@
 // -------------------- ログ出力（行ごとにコピーボタン） --------------------
 function addLog(message, type = "info") {
-    const logView = document.getElementById("log-view");
+    const queryApp = document.querySelector('.app-query');
+    const logView = queryApp && !queryApp.hidden
+        ? document.getElementById('query-log-view')
+        : document.getElementById('log-view');
     if (!logView) return;
 
     const row = document.createElement("div");

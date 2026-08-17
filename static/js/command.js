@@ -81,7 +81,10 @@ function toSnakeCase(str) {
 
 // ログクリア
 function clearLog() {
-    const logView = document.getElementById("log-view");
+    const queryApp = document.querySelector('.app-query');
+    const logView = queryApp && !queryApp.hidden
+        ? document.getElementById('query-log-view')
+        : document.getElementById('log-view');
     if (logView) logView.textContent = '';
 }
 
@@ -261,14 +264,14 @@ const commands = {
 };
 
 // -------------------- ボタン生成 --------------------
-function renderSidebarButtons(btnConfigs) {
-    sidebar.innerHTML = '';
+function renderSidebarButtons(btnConfigs, targetSidebar = sidebar) {
+    targetSidebar.innerHTML = '';
 
     btnConfigs.forEach(cfg => {
         const btn = document.createElement('button');
         btn.className = `btn ${cfg.class || ''}`;
         btn.textContent = cfg.text || '';
-        sidebar.appendChild(btn);
+        targetSidebar.appendChild(btn);
 
         // actionがあればセット、無ければinputへ文字反映
         if (cfg.action) {

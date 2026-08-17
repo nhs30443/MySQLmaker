@@ -137,6 +137,10 @@ def conn_mysql():
     return conn
 
 
+def quote_identifier(identifier):
+    return "`" + identifier.replace("`", "``") + "`"
+
+
 # テーブルjson解析
 def parse_tables(payload):
     # payload から tables を取得
@@ -795,6 +799,128 @@ def validate_create_db():
         "sql": sql_list,
         "json": tables_json
     })
+
+
+# DB一覧取得API
+@app.route('/api/databases', methods=['GET'])
+def get_databases():
+    conn = None
+    cursor = None
+
+    try:
+        conn = conn_mysql()
+        cursor = conn.cursor()
+        cursor.execute("SHOW DATABASES")
+        databases = [row[0] for row in cursor.fetchall()]
+        return jsonify({"databases": databases})
+    except mysql.connector.Error as e:
+        return jsonify({"error": f"DB一覧の取得に失敗しました: {e.msg}"}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+
+# DB構造取得API
+@app.route('/api/database_schema', methods=['POST'])
+def get_database_schema():
+    data = request.get_json() or {}
+    database_name = data.get('database_name', '').strip()
+    conn = None
+    cursor = None
+
+    if not database_name:
+        return jsonify({"error": "データベースを選択してください"}), 400
+
+    try:
+        conn = conn_mysql()
+        cursor = conn.cursor()
+        cursor.execute("SHOW DATABASES LIKE %s", (database_name,))
+        if cursor.fetchone() is None:
+            raise ValueError(f"データベース「{database_name}」が見つかりません")
+
+        cursor.execute(
+            """
+            SELECT TABLE_NAME, COLUMN_NAME
+            FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = %s
+            ORDER BY TABLE_NAME, ORDINAL_POSITION
+            """,
+            (database_name,)
+        )
+
+        tables = {}
+        for table_name, column_name in cursor.fetchall():
+            if table_name not in tables:
+                tables[table_name] = {
+                    "table-logical": "",
+                    "table-physical": table_name,
+                    "columns": []
+                }
+
+            tables[table_name]["columns"].append({
+                "column-logical": "",
+                "column-physical": column_name
+            })
+
+        return jsonify({
+            "database_name": database_name,
+            "tables": list(tables.values())
+        })
+    except (mysql.connector.Error, ValueError) as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
+
+
+# クエリ実行API
+@app.route('/api/execute_query', methods=['POST'])
+def execute_query():
+    data = request.get_json() or {}
+    database_name = data.get('database_name', '').strip()
+    query = data.get('query', '').strip()
+    conn = None
+    cursor = None
+
+    if not database_name:
+        return jsonify({"error": "データベースを選択してください"}), 400
+    if not query:
+        return jsonify({"error": "クエリを入力してください"}), 400
+
+    try:
+        conn = conn_mysql()
+        cursor = conn.cursor()
+        cursor.execute("SHOW DATABASES LIKE %s", (database_name,))
+        if cursor.fetchone() is None:
+            raise ValueError(f"データベース「{database_name}」が見つかりません")
+
+        cursor.execute(f"USE {quote_identifier(database_name)}")
+        cursor.execute(query)
+
+        if cursor.with_rows:
+            columns = list(cursor.column_names)
+            rows = [[str(value) if value is not None else None for value in row] for row in cursor.fetchall()]
+            return jsonify({"columns": columns, "rows": rows})
+
+        conn.commit()
+        return jsonify({
+            "columns": [],
+            "rows": [],
+            "message": f"{cursor.rowcount}件の行に反映しました"
+        })
+    except (mysql.connector.Error, ValueError) as e:
+        if conn:
+            conn.rollback()
+        return jsonify({"error": f"クエリ実行エラー: {e}"}), 400
+    finally:
+        if cursor:
+            cursor.close()
+        if conn and conn.is_connected():
+            conn.close()
     
     
 # DB作成API

@@ -15,6 +15,25 @@ body {
   overflow-y: hidden;
 }
 
+.app[hidden] {
+  display: none !important;
+}
+
+.sidebar[hidden],
+.query-main[hidden],
+.query-log-main[hidden] {
+  display: none !important;
+}
+
+.app-query {
+  margin-left: 340px;
+  overflow: hidden;
+}
+
+.app-query.query-log-mode {
+  margin-left: 170px;
+}
+
 header {
   position: fixed;
   top: 0;
@@ -146,6 +165,31 @@ header {
   transform: translateY(1px) scale(0.985);
 }
 
+.query-mode-btn {
+  width: 130px;
+  height: 36px;
+  margin: 1px 30px 0 0;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  background: #ffffff;
+  font-weight: bold;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18),
+      rgba(0, 0, 0, 0.07));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: 0.2s ease;
+}
+
+.query-mode-btn:hover {
+  background-color: #c8e6ff;
+}
+
+.query-mode-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
 .toggle-switch {
   display: flex;
   border-radius: 7px;
@@ -268,6 +312,176 @@ header {
 .sidebar button.green {
   background-color: #beffa6;
   border-color: #4aa83b;
+}
+
+.query-schema-sidebar {
+  left: 170px;
+}
+
+/* ===== クエリモード ===== */
+.query-main {
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 58fr 42fr;
+  gap: 12px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.query-editor-zone {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 3px solid #1f357c;
+  background: #ffffff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+}
+
+.query-editor-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+  border-bottom: 2px solid #1f357c;
+  background: #edf0ff;
+}
+
+.query-editor-toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.query-execute-btn {
+  width: 110px;
+  height: 36px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid #4aa83b;
+  background-color: #beffa6;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18),
+      rgba(0, 0, 0, 0.07));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+.query-execute-btn:hover {
+  background-color: #a8f28c;
+  transform: translateY(-1px);
+}
+
+.query-execute-btn:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+.query-execute-btn:disabled {
+  background-color: #999999;
+  border-color: #777777;
+  cursor: not-allowed;
+}
+
+.query-clear-btn {
+  width: 80px;
+  height: 36px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid #d95a52;
+  background-color: #ff9a91;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18),
+      rgba(0, 0, 0, 0.07));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+.query-clear-btn:hover {
+  background-color: #ff7f73;
+  transform: translateY(-1px);
+}
+
+.query-clear-btn:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28);
+}
+
+.query-editor {
+  display: block;
+  width: 100%;
+  min-height: calc(100% - 54px);
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background: transparent;
+  color: #222;
+}
+
+.query-editor::placeholder {
+  color: #999999;
+}
+
+.query-result-zone {
+  min-height: 0;
+  overflow: hidden;
+  border: 3px solid #1f357c;
+  background: #ffffff;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.query-result-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.query-result-table {
+  border-collapse: collapse;
+  min-width: 100%;
+  white-space: nowrap;
+}
+
+.query-result-table th,
+.query-result-table td {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-bottom: 2px solid #000;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  text-align: left;
+}
+
+.query-result-table th {
+  background: #192c93;
+  color: #ffffff;
+  font-weight: bold;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18),
+      rgba(0, 0, 0, 0.06));
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.query-result-table tbody tr:nth-child(even) td {
+  background-color: #f5f7ff;
+}
+
+.query-result-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
 }
 
 /* ===== メイン ===== */
@@ -558,7 +772,8 @@ header {
   padding: 0 0 0 10px;
 }
 
-.main.log-mode #log-view {
+.main.log-mode #log-view,
+.main.log-mode #query-log-view {
   display: block;
   width: 100%;
   height: 100%;
@@ -572,7 +787,8 @@ header {
   max-width: 100%;
 }
 
-.main.log-mode #log-view::-webkit-scrollbar {
+.main.log-mode #log-view::-webkit-scrollbar,
+.main.log-mode #query-log-view::-webkit-scrollbar {
   display: none;
 }
 
@@ -720,16 +936,19 @@ header {
   color: #555;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
   width: 90%;
   padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
+  background-color: #ffffff;
   transition: border-color 0.2s;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: #3498db;
   outline: none;
 }

@@ -18,27 +18,30 @@
 <body>
     {% include 'parts/_flash.html' %}
 
-    <div class="app">
-        <header>
-            <div class="logo">MySQLmaker</div>
-            <button id="file-btn" class="file-btn">
-                ファイル
+    <header>
+        <div class="logo">MySQLmaker</div>
+        <button id="file-btn" class="file-btn">
+            ファイル
+        </button>
+
+        <div class="header-buttons">
+            <button id="settings-btn" class="settings-btn">
+                設定
             </button>
-
-            <div class="header-buttons">
-                <button id="settings-btn" class="settings-btn">
-                    設定
-                </button>
-                <button id="create-db-btn" class="create-db-btn">
-                    データベース作成
-                </button>
-                <div class="toggle-switch">
-                    <div class="toggle-option active">DB</div>
-                    <div class="toggle-option">ログ</div>
-                </div>
+            <button id="create-db-btn" class="create-db-btn">
+                データベース作成
+            </button>
+            <button id="query-mode-btn" class="query-mode-btn" type="button">
+                クエリモード
+            </button>
+            <div id="db-log-toggle" class="toggle-switch">
+                <div class="toggle-option active">DB</div>
+                <div class="toggle-option">ログ</div>
             </div>
-        </header>
+        </div>
+    </header>
 
+    <div class="app app-db">
         <aside class="sidebar"></aside>
 
         <main class="main">
@@ -106,100 +109,148 @@
 
             <div id="log-view" class="main-view"></div>
         </main>
+    </div>
 
-        <div id="file-modal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">ファイル</h2>
-                    <span id="close-file-modal" class="close">&times;</span>
+    <div class="app app-query" hidden>
+        <aside class="sidebar query-cmd-sidebar"></aside>
+
+        <aside class="sidebar query-schema-sidebar"></aside>
+
+        <main class="query-main">
+            <section class="query-editor-zone">
+                <div class="query-editor-toolbar">
+                    <div class="query-editor-toolbar-actions">
+                        <button id="query-execute-btn" type="button" class="query-execute-btn">実行</button>
+                        <button id="query-clear-btn" type="button" class="query-clear-btn">クリア</button>
+                    </div>
                 </div>
-
-                <div class="modal-sub-actions">
-                    <button type="button" id="file-new-btn" class="btn-secondary">
-                        テーブルをリセット
-                    </button>
+                <textarea class="query-editor" placeholder="SQLを入力..." spellcheck="false"></textarea>
+            </section>
+            <section class="query-result-zone">
+                <div class="query-result-scroll">
+                    <table class="query-result-table">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
+            </section>
+        </main>
+        <main id="query-log-main" class="main query-log-main" hidden>
+            <div id="query-log-view" class="main-view active"></div>
+        </main>
+    </div>
 
-                <hr class="modal-divider">
+    <div id="query-db-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">データベースを選択</h2>
+                <span id="close-query-db-modal" class="close">&times;</span>
+            </div>
 
-                <div class="modal-sub-actions">
-                    <button type="button" id="file-load-json-btn" class="btn-secondary">
-                        JSONを読み込む
-                    </button>
+            <form id="query-db-form">
+                <div class="form-group">
+                    <label for="query-db-select">データベース</label>
+                    <select id="query-db-select" name="database_name"></select>
                 </div>
-
-                <div class="modal-sub-actions">
-                    <button type="button" id="file-save-json-btn" class="btn-secondary">
-                        JSONを保存
-                    </button>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-query-db" class="btn-cancel">キャンセル</button>
+                    <button type="submit" class="btn-primary">選択</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="file-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">ファイル</h2>
+                <span id="close-file-modal" class="close">&times;</span>
+            </div>
+
+            <div class="modal-sub-actions">
+                <button type="button" id="file-new-btn" class="btn-secondary">
+                    テーブルをリセット
+                </button>
+            </div>
+
+            <hr class="modal-divider">
+
+            <div class="modal-sub-actions">
+                <button type="button" id="file-load-json-btn" class="btn-secondary">
+                    JSONを読み込む
+                </button>
+            </div>
+
+            <div class="modal-sub-actions">
+                <button type="button" id="file-save-json-btn" class="btn-secondary">
+                    JSONを保存
+                </button>
             </div>
         </div>
+    </div>
 
-        <div id="settings-modal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">設定</h2>
-                    <span id="close-modal" class="close">&times;</span>
-                </div>
-
-                <form id="config-form">
-                    <div class="form-group">
-                        <label>DeepL API Key</label>
-                        <input type="text" name="DEEPL_API_KEY" value="{{ DEEPL_API_KEY }}" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label>DB User</label>
-                        <input type="text" name="DB_USER" value="{{ DB_USER }}" autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label>DB Password</label>
-                        <input type="text" name="DB_PASSWORD" value="{{ DB_PASSWORD }}" autocomplete="off">
-                    </div>
-                    <button type="submit" id="btn-save" class="btn-save">保存</button>
-                </form>
+    <div id="settings-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">設定</h2>
+                <span id="close-modal" class="close">&times;</span>
             </div>
-        </div>
 
-        <div id="create-db-modal" class="modal" style="display:none;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">データベース作成</h2>
-                    <span id="close-create-db-modal" class="close">&times;</span>
+            <form id="config-form">
+                <div class="form-group">
+                    <label>DeepL API Key</label>
+                    <input type="text" name="DEEPL_API_KEY" value="{{ DEEPL_API_KEY }}" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>DB User</label>
+                    <input type="text" name="DB_USER" value="{{ DB_USER }}" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>DB Password</label>
+                    <input type="text" name="DB_PASSWORD" value="{{ DB_PASSWORD }}" autocomplete="off">
+                </div>
+                <button type="submit" id="btn-save" class="btn-save">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="create-db-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">データベース作成</h2>
+                <span id="close-create-db-modal" class="close">&times;</span>
+            </div>
+
+            <div class="modal-sub-actions">
+                <button type="button" id="save-json-btn" class="btn-secondary">
+                    正規化JSONを保存
+                </button>
+
+                <button type="button" id="save-sql-btn" class="btn-secondary">
+                    SQLを保存
+                </button>
+            </div>
+
+            <hr class="modal-divider">
+
+            <form id="create-db-form">
+                <div class="form-group">
+                    <label for="db-name-input">データベース名</label>
+                    <input type="text" id="db-name-input" name="db_name" placeholder="database_name"
+                        autocomplete="off">
                 </div>
 
-                <div class="modal-sub-actions">
-                    <button type="button" id="save-json-btn" class="btn-secondary">
-                        正規化JSONを保存
+                <div class="modal-actions">
+                    <button type="button" id="cancel-create-db" class="btn-cancel">
+                        キャンセル
                     </button>
 
-                    <button type="button" id="save-sql-btn" class="btn-secondary">
-                        SQLを保存
+                    <button type="submit" id="confirm-create-db" class="btn-primary">
+                        DBを作成
                     </button>
                 </div>
-
-                <hr class="modal-divider">
-
-                <form id="create-db-form">
-                    <div class="form-group">
-                        <label for="db-name-input">データベース名</label>
-                        <input type="text" id="db-name-input" name="db_name" placeholder="database_name"
-                            autocomplete="off">
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" id="cancel-create-db" class="btn-cancel">
-                            キャンセル
-                        </button>
-
-                        <button type="submit" id="confirm-create-db" class="btn-primary">
-                            DBを作成
-                        </button>
-                    </div>
-                </form>
-            </div>
+            </form>
         </div>
-
     </div>
 
     <script src="{{ url_for('static', filename='js/parts/_flash.js') }}"></script>
@@ -213,6 +264,7 @@
     <script src="{{ url_for('static', filename='js/config.js') }}"></script>
     <script src="{{ url_for('static', filename='js/log.js') }}"></script>
     <script src="{{ url_for('static', filename='js/file.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/query-mode.js') }}"></script>
 
 </body>
 
