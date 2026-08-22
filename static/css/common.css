@@ -130,6 +130,31 @@ header {
   background-color: #777777;
 }
 
+.database-change-btn {
+  width: 150px;
+  height: 36px;
+  margin: 1px 30px 0 0;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.18);
+  background: #ffffff;
+  font-weight: bold;
+  background-image: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.18),
+      rgba(0, 0, 0, 0.07));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  transition: 0.2s ease;
+}
+
+.database-change-btn:hover {
+  background-color: #fff299;
+}
+
+.database-change-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
 .create-db-btn {
   width: 150px;
   height: 36px;
@@ -995,6 +1020,10 @@ header {
   justify-content: space-between;
   gap: 14px;
   margin-bottom: 18px;
+}
+
+.modal-sub-actions[hidden] {
+  display: none;
 }
 
 .modal-sub-actions button {

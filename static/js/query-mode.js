@@ -1,11 +1,13 @@
 // -------------------- クエリモード切替 --------------------
 let querySchemaJson = null;
+const queryResult = { columns: [], rows: [] };
 
 const queryModeBtn = document.getElementById('query-mode-btn');
 const appDb = document.querySelector('.app-db');
 const appQuery = document.querySelector('.app-query');
 const dbLogToggle = document.getElementById('db-log-toggle');
 const createDbBtn = document.getElementById('create-db-btn');
+const databaseChangeBtn = document.getElementById('database-change-btn');
 const commandSidebar = document.querySelector('.query-cmd-sidebar');
 const schemaSidebar = document.querySelector('.query-schema-sidebar');
 const queryEditor = document.querySelector('.query-editor');
@@ -26,8 +28,9 @@ const queryCommands = [
     { text: 'FROM', color: 'yellow' },
     { text: 'INSERT INTO', color: 'yellow' },
     { text: 'VALUES', color: 'yellow' },
-    { text: 'UPDATE', color: 'yellow' },
-    { text: 'SET', color: 'yellow' },
+    { text: 'UPDATE', color: 'green' },
+    { text: 'SET', color: 'green' },
+    { text: 'DELETE FROM', color: 'red' },
     { text: 'WITH', color: 'yellow' },
     { text: 'DISTINCT', color: 'yellow' },
     { text: 'AS', color: 'yellow' },
@@ -49,7 +52,6 @@ const queryCommands = [
     { text: 'IS NULL', color: 'green' },
     { text: 'IS NOT NULL', color: 'green' },
     { text: 'EXISTS', color: 'green' },
-    { text: 'DELETE FROM', color: 'red' },
     { text: 'COUNT()', color: 'red' },
     { text: 'SUM()', color: 'red' },
     { text: 'AVG()', color: 'red' },
@@ -195,6 +197,9 @@ function renderCommandPalette() {
 function renderQueryResult(columns = [], rows = []) {
     if (!queryResultTable) return;
 
+    queryResult.columns = columns;
+    queryResult.rows = rows;
+
     const thead = queryResultTable.querySelector('thead');
     const tbody = queryResultTable.querySelector('tbody');
     thead.innerHTML = '';
@@ -250,26 +255,31 @@ function renderSchemaPalette(payload) {
 
 async function enterQueryMode() {
     try {
-        const res = await fetch('/api/databases');
-        const data = await res.json();
-        if (!res.ok) {
-            throw new Error(data.error || 'DB一覧の取得に失敗しました');
-        }
-        if (!data.databases?.length) {
-            throw new Error('選択可能なデータベースがありません');
-        }
-
-        queryDbSelect.innerHTML = '';
-        data.databases.forEach((databaseName) => {
-            const option = document.createElement('option');
-            option.value = databaseName;
-            option.textContent = databaseName;
-            queryDbSelect.appendChild(option);
-        });
-        queryDbModal.style.display = 'flex';
+        await openQueryDatabaseModal();
     } catch (e) {
         showFlashMessage(e.message || 'DB一覧の取得に失敗しました', 'red');
     }
+}
+
+async function openQueryDatabaseModal() {
+    const res = await fetch('/api/databases');
+    const data = await res.json();
+    if (!res.ok) {
+        throw new Error(data.error || 'DB一覧の取得に失敗しました');
+    }
+    if (!data.databases?.length) {
+        throw new Error('選択可能なデータベースがありません');
+    }
+
+    queryDbSelect.innerHTML = '';
+    data.databases.forEach((databaseName) => {
+        const option = document.createElement('option');
+        option.value = databaseName;
+        option.textContent = databaseName;
+        option.selected = databaseName === querySchemaJson?.database_name;
+        queryDbSelect.appendChild(option);
+    });
+    queryDbModal.style.display = 'flex';
 }
 
 async function selectQueryDatabase(databaseName) {
@@ -292,8 +302,11 @@ async function selectQueryDatabase(databaseName) {
     appDb.hidden = true;
     appQuery.hidden = false;
 
+    setFileModalMode(true);
+
     if (queryModeBtn) queryModeBtn.textContent = 'DB作成モード';
     if (dbLogToggle) dbLogToggle.hidden = false;
+    if (databaseChangeBtn) databaseChangeBtn.hidden = false;
     if (createDbBtn) createDbBtn.hidden = true;
     resetLogs();
 }
@@ -333,8 +346,11 @@ function enterDbMode() {
     appQuery.hidden = true;
     appDb.hidden = false;
 
+    setFileModalMode(false);
+
     if (queryModeBtn) queryModeBtn.textContent = 'クエリモード';
     if (dbLogToggle) dbLogToggle.hidden = false;
+    if (databaseChangeBtn) databaseChangeBtn.hidden = true;
     if (createDbBtn) createDbBtn.hidden = false;
     resetLogs();
 }
@@ -353,6 +369,16 @@ if (queryModeBtn) {
             queryModeBtn.disabled = true;
             await enterQueryMode();
             queryModeBtn.disabled = false;
+        }
+    });
+}
+
+if (databaseChangeBtn) {
+    databaseChangeBtn.addEventListener('click', async () => {
+        try {
+            await openQueryDatabaseModal();
+        } catch (e) {
+            showFlashMessage(e.message || 'DB一覧の取得に失敗しました', 'red');
         }
     });
 }
@@ -377,6 +403,12 @@ if (closeQueryDbModalBtn) {
 if (cancelQueryDbBtn) {
     cancelQueryDbBtn.addEventListener('click', () => {
         queryDbModal.style.display = 'none';
+    });
+}
+
+if (queryDbModal) {
+    queryDbModal.addEventListener('click', (e) => {
+        if (e.target === queryDbModal) queryDbModal.style.display = 'none';
     });
 }
 

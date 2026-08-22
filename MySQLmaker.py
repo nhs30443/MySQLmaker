@@ -1,3 +1,4 @@
+import base64
 import configparser
 import os
 import re
@@ -699,6 +700,20 @@ class FileSaveAPI:
         except Exception as e:
             return f"保存に失敗しました: {e}"
 
+    def save_binary_file(self, default_name, content_base64):
+        try:
+            path = webview.windows[0].create_file_dialog(
+                int(webview.SAVE_DIALOG),
+                save_filename=default_name
+            )
+            if path:
+                with open(path[0], 'wb') as f:
+                    f.write(base64.b64decode(content_base64))
+                return "success"
+            return "cancel"
+        except Exception as e:
+            return f"保存に失敗しました: {e}"
+
 
 ############################################################################
 ### ルート
@@ -907,10 +922,14 @@ def execute_query():
             return jsonify({"columns": columns, "rows": rows})
 
         conn.commit()
+        statement = query.split(None, 1)[0].upper()
+        message = "クエリを実行しました"
+        if statement in {"INSERT", "UPDATE", "DELETE", "REPLACE"} and cursor.rowcount >= 0:
+            message = f"{cursor.rowcount}件の行に反映しました"
         return jsonify({
             "columns": [],
             "rows": [],
-            "message": f"{cursor.rowcount}件の行に反映しました"
+            "message": message
         })
     except (mysql.connector.Error, ValueError) as e:
         if conn:

@@ -28,6 +28,9 @@
             <button id="settings-btn" class="settings-btn">
                 設定
             </button>
+            <button id="database-change-btn" class="database-change-btn" type="button" hidden>
+                データベース変更
+            </button>
             <button id="create-db-btn" class="create-db-btn">
                 データベース作成
             </button>
@@ -185,6 +188,20 @@
                 <button type="button" id="file-save-json-btn" class="btn-secondary">
                     JSONを保存
                 </button>
+            </div>
+
+            <div id="query-file-actions" hidden>
+                <div class="modal-sub-actions">
+                    <button type="button" id="query-save-sql-btn" class="btn-secondary">
+                        SQLを保存
+                    </button>
+                </div>
+
+                <div class="modal-sub-actions">
+                    <button type="button" id="query-save-result-btn" class="btn-secondary">
+                        SELECT結果を保存
+                    </button>
+                </div>
             </div>
         </div>
     </div>

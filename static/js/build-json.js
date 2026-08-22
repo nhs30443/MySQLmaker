@@ -116,3 +116,46 @@ function getTimestampName() {
         + String(now.getMinutes()).padStart(2, '0')
         + String(now.getSeconds()).padStart(2, '0');
 }
+
+async function handleSaveBinaryFile(defaultName, content) {
+    if (!content?.length) {
+        showFlashMessage("保存可能なデータがありません", "red");
+        return;
+    }
+
+    try {
+        // pywebview環境
+        if (window.pywebview && window.pywebview.api) {
+            const result = await window.pywebview.api.save_binary_file(defaultName, bytesToBase64(content));
+
+            if (result === "success") {
+                showFlashMessage(`${defaultName}を保存しました`, "green");
+            } else if (result !== "cancel") {
+                showFlashMessage(result, "red");
+            }
+        } else {
+            const blob = new Blob([content], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = defaultName;
+            a.click();
+            URL.revokeObjectURL(url);
+            showFlashMessage(`${defaultName}を保存しました`, "green");
+        }
+    } catch (e) {
+        showFlashMessage(e.message || String(e), "red");
+        console.error(e);
+    }
+}
+
+function bytesToBase64(bytes) {
+    const chunkSize = 0x8000;
+    let binary = '';
+    for (let index = 0; index < bytes.length; index += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+    }
+    return btoa(binary);
+}
