@@ -24,42 +24,145 @@ let queryEditorHistoryIndex = -1;
 let isRestoringQueryEditorHistory = false;
 
 const queryCommands = [
+    // SELECT
     { text: 'SELECT', color: 'yellow' },
-    { text: 'FROM', color: 'yellow' },
-    { text: 'INSERT INTO', color: 'yellow' },
-    { text: 'VALUES', color: 'yellow' },
-    { text: 'UPDATE', color: 'green' },
-    { text: 'SET', color: 'green' },
-    { text: 'DELETE FROM', color: 'red' },
-    { text: 'WITH', color: 'yellow' },
     { text: 'DISTINCT', color: 'yellow' },
     { text: 'AS', color: 'yellow' },
-    { text: 'GROUP BY', color: 'yellow' },
-    { text: 'ORDER BY', color: 'yellow' },
-    { text: 'LIMIT', color: 'yellow' },
+    { text: 'FROM', color: 'yellow' },
+
+    // INSERT
+    { text: 'INSERT INTO', color: 'yellow' },
+    { text: 'VALUES', color: 'yellow' },
+
+    // UPDATE
+    { text: 'UPDATE', color: 'green' },
+    { text: 'SET', color: 'green' },
+
+    // DELETE
+    { text: 'DELETE FROM', color: 'red' },
+
+    // JOIN
+    { text: 'JOIN', color: 'green' },
+    { text: 'INNER JOIN', color: 'green' },
+    { text: 'LEFT JOIN', color: 'green' },
+    { text: 'RIGHT JOIN', color: 'green' },
+    { text: 'CROSS JOIN', color: 'green' },
+    { text: 'ON', color: 'green' },
+
+    // WHERE
     { text: 'WHERE', color: 'green' },
     { text: 'AND', color: 'green' },
     { text: 'OR', color: 'green' },
-    { text: 'JOIN', color: 'green' },
-    { text: 'ON', color: 'green' },
-    { text: 'LEFT JOIN', color: 'green' },
-    { text: 'INNER JOIN', color: 'green' },
-    { text: 'HAVING', color: 'green' },
+    { text: 'NOT', color: 'green' },
     { text: 'IN', color: 'green' },
     { text: 'NOT IN', color: 'green' },
     { text: 'LIKE', color: 'green' },
+    { text: 'NOT LIKE', color: 'green' },
     { text: 'BETWEEN', color: 'green' },
+    { text: 'NOT BETWEEN', color: 'green' },
     { text: 'IS NULL', color: 'green' },
     { text: 'IS NOT NULL', color: 'green' },
     { text: 'EXISTS', color: 'green' },
+    { text: 'NOT EXISTS', color: 'green' },
+
+    // GROUP BY / HAVING
+    { text: 'GROUP BY', color: 'yellow' },
+    { text: 'HAVING', color: 'yellow' },
+
+    // ORDER BY / LIMIT
+    { text: 'ORDER BY', color: 'yellow' },
+    { text: 'ASC', color: 'yellow' },
+    { text: 'DESC', color: 'yellow' },
+    { text: 'LIMIT', color: 'yellow' },
+
+    // 集合演算
+    { text: 'UNION', color: 'yellow' },
+    { text: 'UNION ALL', color: 'yellow' },
+    { text: 'INTERSECT', color: 'yellow' },
+    { text: 'EXCEPT', color: 'yellow' },
+
+    // CTE
+    { text: 'WITH', color: 'yellow' },
+
+    // CASE
+    { text: 'CASE', color: 'green' },
+    { text: 'WHEN', color: 'green' },
+    { text: 'THEN', color: 'green' },
+    { text: 'ELSE', color: 'green' },
+    { text: 'END', color: 'green' }
+];
+
+const queryFunctions = [
+    // 集約関数
     { text: 'COUNT()', color: 'red' },
+    { text: 'COUNT(*)', color: 'red', requiresArgument: false },
+    { text: 'COUNT(DISTINCT)', color: 'red' },
     { text: 'SUM()', color: 'red' },
     { text: 'AVG()', color: 'red' },
     { text: 'MAX()', color: 'red' },
     { text: 'MIN()', color: 'red' },
+    { text: 'GROUP_CONCAT()', color: 'red' },
+
+    // NULL・条件処理
     { text: 'COALESCE()', color: 'red' },
+    { text: 'IF()', color: 'red' },
+    { text: 'IFNULL()', color: 'red' },
+    { text: 'NULLIF()', color: 'red' },
+
+    // 文字列
     { text: 'CONCAT()', color: 'red' },
-    { text: 'NOW()', color: 'red' }
+    { text: 'CONCAT_WS()', color: 'red' },
+    { text: 'LOWER()', color: 'red' },
+    { text: 'UPPER()', color: 'red' },
+    { text: 'TRIM()', color: 'red' },
+    { text: 'LENGTH()', color: 'red' },
+    { text: 'SUBSTRING()', color: 'red' },
+
+    // 日付・時刻
+    { text: 'NOW()', color: 'red', requiresArgument: false },
+    { text: 'CURDATE()', color: 'red', requiresArgument: false },
+    { text: 'CURTIME()', color: 'red', requiresArgument: false },
+    { text: 'YEAR()', color: 'red' },
+    { text: 'MONTH()', color: 'red' },
+    { text: 'DAY()', color: 'red' },
+    { text: 'DATE_FORMAT()', color: 'red' },
+    { text: 'DATEDIFF()', color: 'red' },
+    { text: 'TIMESTAMPDIFF()', color: 'red' },
+
+    // 数値
+    { text: 'ROUND()', color: 'red' },
+    { text: 'ABS()', color: 'red' },
+    { text: 'CEIL()', color: 'red' },
+    { text: 'FLOOR()', color: 'red' },
+    { text: 'TRUNCATE()', color: 'red' },
+
+    // ウィンドウ関数
+    { text: 'ROW_NUMBER()', color: 'red', requiresArgument: false },
+    { text: 'RANK()', color: 'red', requiresArgument: false },
+    { text: 'DENSE_RANK()', color: 'red', requiresArgument: false }
+];
+
+const querySymbols = [
+    // 比較演算子
+    { text: '=', color: 'yellow' },
+    { text: '!=', color: 'yellow' },
+    { text: '<>', color: 'yellow' },
+    { text: '>', color: 'yellow' },
+    { text: '<', color: 'yellow' },
+    { text: '>=', color: 'yellow' },
+    { text: '<=', color: 'yellow' },
+    { text: '<=>', color: 'yellow' },
+
+    // 文字列
+    { text: "''", color: 'red', action: insertQuotedText },
+    { text: "'%%'", color: 'red', action: insertLikePattern },
+
+    // 算術演算子
+    { text: '+', color: 'yellow' },
+    { text: '-', color: 'yellow' },
+    { text: '*', color: 'yellow' },
+    { text: '/', color: 'yellow' },
+    { text: '%', color: 'yellow' }
 ];
 
 function isQueryMode() {
@@ -74,6 +177,15 @@ function insertQueryText(text) {
     queryEditor.setRangeText(`${text} `, start, end, 'end');
     queryEditor.focus();
     saveQueryEditorHistory();
+}
+
+function insertQueryFunction(text, requiresArgument = true) {
+    if (!requiresArgument) {
+        insertQueryText(text);
+        return;
+    }
+
+    insertTextWithCursor(text, text.length - 1);
 }
 
 function insertTab() {
@@ -124,24 +236,43 @@ function restoreQueryEditorHistory(index) {
     queryEditor.focus();
 }
 
-function createQueryButton(text, color, action) {
+function createQueryButton(text, color, action, isFunction = false) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `btn ${color} show`;
-    if (text.length > 14) button.classList.add('longbtn');
-    if (text.length > 18) button.classList.add('longerbtn');
+
+    if (isFunction) {
+        if (text.length > 11) button.classList.add('longbtn');
+        if (text.length > 18) button.classList.add('longerbtn');
+    } else {
+        if (text.length > 14) button.classList.add('longbtn');
+        if (text.length > 18) button.classList.add('longerbtn');
+    }
+
     button.textContent = text;
     button.addEventListener('click', () => (action || insertQueryText)(text));
     return button;
 }
 
 function insertParentheses() {
+    insertTextWithCursor('()', 1);
+}
+
+function insertQuotedText() {
+    insertTextWithCursor("''", 1, true);
+}
+
+function insertLikePattern() {
+    insertTextWithCursor("'%%'", 2, true);
+}
+
+function insertTextWithCursor(text, cursorOffset, appendSpace = false) {
     if (!queryEditor) return;
 
     const start = queryEditor.selectionStart;
     const end = queryEditor.selectionEnd;
-    queryEditor.setRangeText('()', start, end, 'end');
-    queryEditor.setSelectionRange(start + 1, start + 1);
+    queryEditor.setRangeText(`${text}${appendSpace ? ' ' : ''}`, start, end, 'end');
+    queryEditor.setSelectionRange(start + cursorOffset, start + cursorOffset);
     queryEditor.focus();
     saveQueryEditorHistory();
 }
@@ -185,12 +316,36 @@ function insertSemicolon() {
     saveQueryEditorHistory();
 }
 
+function insertPeriod() {
+    if (!queryEditor) return;
+
+    const start = queryEditor.selectionStart;
+    const end = queryEditor.selectionEnd;
+    const before = queryEditor.value.slice(0, start).replace(/ +$/, '');
+    const after = queryEditor.value.slice(end);
+    queryEditor.value = `${before}.${after}`;
+    queryEditor.setSelectionRange(before.length + 1, before.length + 1);
+    queryEditor.focus();
+    saveQueryEditorHistory();
+}
+
 function renderCommandPalette() {
     if (!commandSidebar) return;
 
     commandSidebar.innerHTML = '';
     queryCommands.forEach(({ text, color }) => {
         commandSidebar.appendChild(createQueryButton(text, color));
+    });
+    querySymbols.forEach(({ text, color, action }) => {
+        commandSidebar.appendChild(createQueryButton(text, color, action));
+    });
+    queryFunctions.forEach(({ text, color, requiresArgument = true }) => {
+        commandSidebar.appendChild(createQueryButton(
+            text,
+            color,
+            () => insertQueryFunction(text, requiresArgument),
+            true
+        ));
     });
 }
 
@@ -232,6 +387,7 @@ function renderSchemaPalette(payload) {
     schemaSidebar.appendChild(createQueryButton('()', 'red', insertParentheses));
     schemaSidebar.appendChild(createQueryButton(',', 'red', insertComma));
     schemaSidebar.appendChild(createQueryButton(', ↵', 'red', insertCommaWithNewline));
+    schemaSidebar.appendChild(createQueryButton('.', 'red', insertPeriod));
     schemaSidebar.appendChild(createQueryButton(';', 'red', insertSemicolon));
 
     const tables = payload?.tables || [];
