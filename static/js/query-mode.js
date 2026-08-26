@@ -31,8 +31,8 @@ const queryCommands = [
     { text: 'FROM', color: 'yellow' },
 
     // INSERT
-    { text: 'INSERT INTO', color: 'yellow' },
-    { text: 'VALUES', color: 'yellow' },
+    { text: 'INSERT INTO', color: 'green' },
+    { text: 'VALUES', color: 'green' },
 
     // UPDATE
     { text: 'UPDATE', color: 'green' },
